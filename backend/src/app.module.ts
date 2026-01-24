@@ -20,6 +20,8 @@ import { SuppliersModule } from './procurement/suppliers/suppliers.module';
 import { PurchaseOrdersModule } from './procurement/purchase-orders/purchase-orders.module';
 import { FinanceModule } from './finance/finance.module';
 import { ReportingModule } from './reporting/reporting.module';
+import { SettingsModule } from './settings/settings.module';
+import { HRModule } from './hr/hr.module';
 
 @Module({
   imports: [
@@ -81,6 +83,8 @@ import { ReportingModule } from './reporting/reporting.module';
     PurchaseOrdersModule,
     FinanceModule,
     ReportingModule,
+    SettingsModule,
+    HRModule,
   ],
   controllers: [AppController, HealthController, ProfileController],
   providers: [AppService],

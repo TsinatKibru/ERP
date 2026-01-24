@@ -25,6 +25,10 @@ import SuppliersPage from './pages/procurement/SuppliersPage';
 import PurchaseOrdersPage from './pages/procurement/PurchaseOrdersPage';
 import CreatePurchaseOrderPage from './pages/procurement/CreatePurchaseOrderPage';
 import InvoicesPage from './pages/finance/InvoicesPage';
+import SettingsPage from './pages/SettingsPage';
+import EmployeesPage from './pages/hr/EmployeesPage';
+import AttendancePage from './pages/hr/AttendancePage';
+import PayrollPage from './pages/hr/PayrollPage';
 import keycloak from './auth/keycloak';
 
 // Remove default Vite styles that conflict with Ant Design
@@ -170,6 +174,25 @@ const App: React.FC = () => {
                   icon: <SettingOutlined />,
                   label: <Link to="/settings">Settings</Link>,
                 },
+                {
+                  key: '8',
+                  icon: <UserOutlined />,
+                  label: 'HR',
+                  children: [
+                    {
+                      key: '8-1',
+                      label: <Link to="/hr/employees">Employees</Link>,
+                    },
+                    {
+                      key: '8-2',
+                      label: <Link to="/hr/attendance">Attendance</Link>,
+                    },
+                    {
+                      key: '8-3',
+                      label: <Link to="/hr/payroll">Payroll</Link>,
+                    },
+                  ],
+                },
               ]}
             />
           </Sider>
@@ -207,7 +230,10 @@ const App: React.FC = () => {
                 <Route path="/purchase-orders" element={<PurchaseOrdersPage />} />
                 <Route path="/purchase-orders/new" element={<CreatePurchaseOrderPage />} />
                 <Route path="/invoices" element={<InvoicesPage />} />
-                <Route path="/settings" element={<h1>System Settings</h1>} />
+                <Route path="/settings" element={<SettingsPage />} />
+                <Route path="/hr/employees" element={<EmployeesPage />} />
+                <Route path="/hr/attendance" element={<AttendancePage />} />
+                <Route path="/hr/payroll" element={<PayrollPage />} />
               </Routes>
             </Content>
           </Layout>

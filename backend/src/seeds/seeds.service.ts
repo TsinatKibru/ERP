@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { Category } from '../inventory/categories/entities/category.entity';
 import { Product } from '../inventory/products/entities/product.entity';
 import { Supplier } from '../procurement/suppliers/entities/supplier.entity';
+import { SettingsService } from '../settings/settings.service';
 
 @Injectable()
 export class SeedsService {
@@ -14,6 +15,7 @@ export class SeedsService {
         private productsRepository: Repository<Product>,
         @InjectRepository(Supplier)
         private suppliersRepository: Repository<Supplier>,
+        private settingsService: SettingsService,
     ) { }
 
     async seedInventory() {
@@ -70,5 +72,16 @@ export class SeedsService {
         }
 
         return { message: 'Procurement data (suppliers) seeded successfully' };
+    }
+
+    async seedSettings() {
+        await this.settingsService.setBulk([
+            { key: 'company_name', value: 'Antigravity ERP Solutions', category: 'company' },
+            { key: 'company_address', value: '123 Innovation Drive, Silicon Valley, CA', category: 'company' },
+            { key: 'company_email', value: 'contact@antigravity-erp.com', category: 'company' },
+            { key: 'company_phone', value: '+1-555-0199', category: 'company' },
+            { key: 'currency', value: 'USD', category: 'regional' },
+        ]);
+        return { message: 'System settings seeded successfully' };
     }
 }

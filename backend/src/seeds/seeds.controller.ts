@@ -13,8 +13,8 @@ export class SeedsController {
     }
 
     @Public()
-    @Post('procurement')
-    async seedProcurement() {
-        return this.seedsService.seedProcurement();
+    @Post('settings')
+    async seedSettings() {
+        return this.seedsService.seedSettings();
     }
 }

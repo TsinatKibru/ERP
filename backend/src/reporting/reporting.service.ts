@@ -2,14 +2,21 @@ import { Injectable } from '@nestjs/common';
 import * as PDFDocument from 'pdfkit';
 import { Invoice } from '../finance/invoices/entities/invoice.entity';
 import { PurchaseOrder } from '../procurement/purchase-orders/entities/purchase-order.entity';
+import { SettingsService } from '../settings/settings.service';
 
 @Injectable()
 export class ReportingService {
+    constructor(private readonly settingsService: SettingsService) { }
+
     private hr(doc: any, y: number) {
         doc.moveTo(50, y).lineTo(550, y).stroke();
     }
 
     async generateInvoicePDF(invoice: Invoice): Promise<Buffer> {
+        const companyName = await this.settingsService.getVal('company_name', 'Your ERP System');
+        const companyAddress = await this.settingsService.getVal('company_address', '123 Business Road');
+        const companyContact = await this.settingsService.getVal('company_email', 'City, Country');
+
         return new Promise((resolve, reject) => {
             const doc = new PDFDocument({ margin: 50 });
             const chunks: Buffer[] = [];
@@ -24,9 +31,9 @@ export class ReportingService {
                 .fontSize(20)
                 .text('INVOICE', 50, 50)
                 .fontSize(10)
-                .text('Your ERP System', 200, 50, { align: 'right' })
-                .text('123 Business Road', 200, 65, { align: 'right' })
-                .text('City, Country', 200, 80, { align: 'right' })
+                .text(companyName, 200, 50, { align: 'right' })
+                .text(companyAddress, 200, 65, { align: 'right' })
+                .text(companyContact, 200, 80, { align: 'right' })
                 .moveDown();
 
             this.hr(doc, 100);
@@ -78,6 +85,10 @@ export class ReportingService {
     }
 
     async generatePOPDF(po: PurchaseOrder): Promise<Buffer> {
+        const companyName = await this.settingsService.getVal('company_name', 'Your ERP System');
+        const companyAddress = await this.settingsService.getVal('company_address', '123 Business Road');
+        const companyContact = await this.settingsService.getVal('company_email', 'City, Country');
+
         return new Promise((resolve, reject) => {
             const doc = new PDFDocument({ margin: 50 });
             const chunks: Buffer[] = [];
@@ -92,9 +103,9 @@ export class ReportingService {
                 .fontSize(20)
                 .text('PURCHASE ORDER', 50, 50)
                 .fontSize(10)
-                .text('Your ERP System', 200, 50, { align: 'right' })
-                .text('123 Business Road', 200, 65, { align: 'right' })
-                .text('City, Country', 200, 80, { align: 'right' })
+                .text(companyName, 200, 50, { align: 'right' })
+                .text(companyAddress, 200, 65, { align: 'right' })
+                .text(companyContact, 200, 80, { align: 'right' })
                 .moveDown();
 
             this.hr(doc, 100);
