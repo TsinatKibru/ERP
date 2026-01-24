@@ -35,11 +35,22 @@ const EmployeesPage: React.FC = () => {
         },
     });
 
+    const { data: departments } = useQuery<any[]>({
+        queryKey: ['departments'],
+        queryFn: async () => {
+            const { data } = await axios.get('http://localhost:3000/hr/departments', {
+                headers: { Authorization: `Bearer ${keycloak.token}` },
+            });
+            return data;
+        },
+    });
+
     const mutation = useMutation({
         mutationFn: async (values: any) => {
             const payload = {
                 ...values,
                 hireDate: values.hireDate.format('YYYY-MM-DD'),
+                department: { id: values.departmentId }
             };
             if (editingEmployee) {
                 await axios.patch(`http://localhost:3000/hr/employees/${editingEmployee.id}`, payload, {
@@ -62,10 +73,10 @@ const EmployeesPage: React.FC = () => {
     const columns = [
         { title: 'Name', dataIndex: 'name', key: 'name' },
         { title: 'Email', dataIndex: 'email', key: 'email' },
-        { title: 'Department', dataIndex: 'department', key: 'department' },
+        { title: 'Department', dataIndex: ['department', 'name'], key: 'department' },
         { title: 'Job Title', dataIndex: 'jobTitle', key: 'jobTitle' },
         {
-            title: 'Salary',
+            title: 'Annual Base Salary',
             dataIndex: 'salary',
             key: 'salary',
             render: (val: number) => `$${Number(val).toLocaleString()}`,
@@ -91,6 +102,7 @@ const EmployeesPage: React.FC = () => {
                         form.setFieldsValue({
                             ...record,
                             hireDate: dayjs(record.hireDate),
+                            departmentId: (record as any).department?.id
                         });
                         setIsModalOpen(true);
                     }}
@@ -138,13 +150,17 @@ const EmployeesPage: React.FC = () => {
                     <Form.Item name="phone" label="Phone">
                         <Input />
                     </Form.Item>
-                    <Form.Item name="department" label="Department" rules={[{ required: true }]}>
-                        <Input placeholder="e.g. Sales, Engineering" />
+                    <Form.Item name="departmentId" label="Department" rules={[{ required: true }]}>
+                        <Select placeholder="Select Department">
+                            {departments?.map(d => (
+                                <Select.Option key={d.id} value={d.id}>{d.name}</Select.Option>
+                            ))}
+                        </Select>
                     </Form.Item>
                     <Form.Item name="jobTitle" label="Job Title" rules={[{ required: true }]}>
                         <Input placeholder="e.g. Manager, Senior Dev" />
                     </Form.Item>
-                    <Form.Item name="salary" label="Annual Salary" rules={[{ required: true }]}>
+                    <Form.Item name="salary" label="Annual Base Salary" rules={[{ required: true }]}>
                         <InputNumber style={{ width: '100%' }} prefix="$" />
                     </Form.Item>
                     <Form.Item name="hireDate" label="Hire Date" rules={[{ required: true }]}>

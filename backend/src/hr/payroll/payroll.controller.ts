@@ -23,6 +23,11 @@ export class PayrollController {
         return this.payrollService.bulkGenerate(period);
     }
 
+    @Patch(':id')
+    async update(@Param('id') id: string, @Body() data: { bonuses?: number; deductions?: number; status?: PayrollStatus }): Promise<Payroll> {
+        return this.payrollService.update(id, data);
+    }
+
     @Patch(':id/status')
     async updateStatus(@Param('id') id: string, @Body('status') status: PayrollStatus): Promise<Payroll> {
         return this.payrollService.updateStatus(id, status);

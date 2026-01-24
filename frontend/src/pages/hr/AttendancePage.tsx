@@ -1,5 +1,5 @@
 import React from 'react';
-import { Table, Typography, Card, Button, Form, DatePicker, Select, Tag, message, Modal, Input } from 'antd';
+import { Table, Typography, Card, Button, Form, DatePicker, Select, message, Modal, Input, Space } from 'antd';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 import dayjs from 'dayjs';
@@ -19,6 +19,7 @@ interface Attendance {
 
 const AttendancePage: React.FC = () => {
     const queryClient = useQueryClient();
+    const [selectedRowKeys, setSelectedRowKeys] = React.useState<React.Key[]>([]);
     const [isModalOpen, setIsModalOpen] = React.useState(false);
     const [form] = Form.useForm();
 
@@ -46,7 +47,7 @@ const AttendancePage: React.FC = () => {
         mutationFn: async (values: any) => {
             await axios.post('http://localhost:3000/hr/attendance', {
                 ...values,
-                date: values.date.format('YYYY-MM-DD'),
+                date: values.date.format ? values.date.format('YYYY-MM-DD') : values.date,
             }, {
                 headers: { Authorization: `Bearer ${keycloak.token}` },
             });
@@ -59,6 +60,62 @@ const AttendancePage: React.FC = () => {
         },
     });
 
+    const statusMutation = useMutation({
+        mutationFn: async ({ id, status }: { id: string, status: string }) => {
+            const attendance = attendanceData?.find(a => a.id === id);
+            await axios.post('http://localhost:3000/hr/attendance', {
+                employeeId: attendance?.employee.id,
+                date: attendance?.date,
+                status
+            }, {
+                headers: { Authorization: `Bearer ${keycloak.token}` },
+            });
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['attendance'] });
+            message.success('Status updated');
+        },
+    });
+
+    const bulkAbsentMutation = useMutation({
+        mutationFn: async () => {
+            for (const id of selectedRowKeys) {
+                const attendance = attendanceData?.find(a => a.id === id);
+                if (attendance) {
+                    await axios.post('http://localhost:3000/hr/attendance', {
+                        employeeId: attendance.employee.id,
+                        date: attendance.date,
+                        status: 'absent'
+                    }, {
+                        headers: { Authorization: `Bearer ${keycloak.token}` },
+                    });
+                }
+            }
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['attendance'] });
+            setSelectedRowKeys([]);
+            message.success('Selected employees marked as absent');
+        },
+    });
+
+    const bulkMutation = useMutation({
+        mutationFn: async () => {
+            const today = dayjs().format('YYYY-MM-DD');
+            await axios.post('http://localhost:3000/hr/attendance/bulk', {
+                date: today,
+                checkIn: '09:00',
+                checkOut: '17:00'
+            }, {
+                headers: { Authorization: `Bearer ${keycloak.token}` },
+            });
+        },
+        onSuccess: (res: any) => {
+            queryClient.invalidateQueries({ queryKey: ['attendance'] });
+            message.success(`Recorded attendance for ${res.data.count} active employees`);
+        },
+    });
+
     const columns = [
         { title: 'Date', dataIndex: 'date', key: 'date' },
         { title: 'Employee', dataIndex: ['employee', 'name'], key: 'employee' },
@@ -68,10 +125,18 @@ const AttendancePage: React.FC = () => {
             title: 'Status',
             dataIndex: 'status',
             key: 'status',
-            render: (status: string) => (
-                <Tag color={status === 'present' ? 'green' : status === 'late' ? 'orange' : 'red'}>
-                    {status.toUpperCase()}
-                </Tag>
+            render: (status: string, record: Attendance) => (
+                <Select
+                    value={status}
+                    size="small"
+                    style={{ width: 100 }}
+                    onChange={(val) => statusMutation.mutate({ id: record.id, status: val })}
+                >
+                    <Select.Option value="present">PRESENT</Select.Option>
+                    <Select.Option value="absent">ABSENT</Select.Option>
+                    <Select.Option value="late">LATE</Select.Option>
+                    <Select.Option value="leave">LEAVE</Select.Option>
+                </Select>
             ),
         },
         { title: 'Note', dataIndex: 'note', key: 'note' },
@@ -81,11 +146,37 @@ const AttendancePage: React.FC = () => {
         <div>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16 }}>
                 <Title level={2}>Attendance Tracking</Title>
-                <Button type="primary" onClick={() => setIsModalOpen(true)}>Record Attendance</Button>
+                <Space>
+                    {selectedRowKeys.length > 0 && (
+                        <Button
+                            danger
+                            loading={bulkAbsentMutation.isPending}
+                            onClick={() => bulkAbsentMutation.mutate()}
+                        >
+                            Mark {selectedRowKeys.length} Absent
+                        </Button>
+                    )}
+                    <Button
+                        loading={bulkMutation.isPending}
+                        onClick={() => bulkMutation.mutate()}
+                    >
+                        Bulk Check-in Today
+                    </Button>
+                    <Button type="primary" onClick={() => setIsModalOpen(true)}>Record Attendance</Button>
+                </Space>
             </div>
 
             <Card>
-                <Table columns={columns} dataSource={attendanceData} rowKey="id" loading={isLoading} />
+                <Table
+                    rowSelection={{
+                        selectedRowKeys,
+                        onChange: (keys) => setSelectedRowKeys(keys),
+                    }}
+                    columns={columns}
+                    dataSource={attendanceData}
+                    rowKey="id"
+                    loading={isLoading}
+                />
             </Card>
 
             <Modal

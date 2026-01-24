@@ -51,12 +51,21 @@ export class PayrollService {
         return this.payrollRepository.save(payroll);
     }
 
-    async updateStatus(id: string, status: PayrollStatus): Promise<Payroll> {
+    async update(id: string, data: { bonuses?: number; deductions?: number; status?: PayrollStatus }): Promise<Payroll> {
         const payroll = await this.payrollRepository.findOne({ where: { id }, relations: ['employee'] });
         if (!payroll) throw new NotFoundException('Payroll record not found');
 
-        payroll.status = status;
+        if (data.bonuses !== undefined) payroll.bonuses = data.bonuses;
+        if (data.deductions !== undefined) payroll.deductions = data.deductions;
+        if (data.status !== undefined) payroll.status = data.status;
+
+        payroll.netSalary = Number(payroll.baseSalary) + Number(payroll.bonuses) - Number(payroll.deductions);
+
         return this.payrollRepository.save(payroll);
+    }
+
+    async updateStatus(id: string, status: PayrollStatus): Promise<Payroll> {
+        return this.update(id, { status });
     }
 
     async bulkGenerate(period: string): Promise<{ count: number }> {

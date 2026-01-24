@@ -27,6 +27,7 @@ import CreatePurchaseOrderPage from './pages/procurement/CreatePurchaseOrderPage
 import InvoicesPage from './pages/finance/InvoicesPage';
 import SettingsPage from './pages/SettingsPage';
 import EmployeesPage from './pages/hr/EmployeesPage';
+import DepartmentsPage from './pages/hr/DepartmentsPage';
 import AttendancePage from './pages/hr/AttendancePage';
 import PayrollPage from './pages/hr/PayrollPage';
 import keycloak from './auth/keycloak';
@@ -170,17 +171,16 @@ const App: React.FC = () => {
                   label: <Link to="/invoices">Finance</Link>,
                 },
                 {
-                  key: '7',
-                  icon: <SettingOutlined />,
-                  label: <Link to="/settings">Settings</Link>,
-                },
-                {
                   key: '8',
                   icon: <UserOutlined />,
                   label: 'HR',
                   children: [
                     {
                       key: '8-1',
+                      label: <Link to="/hr/departments">Departments</Link>,
+                    },
+                    {
+                      key: '8-2',
                       label: <Link to="/hr/employees">Employees</Link>,
                     },
                     {
@@ -192,6 +192,11 @@ const App: React.FC = () => {
                       label: <Link to="/hr/payroll">Payroll</Link>,
                     },
                   ],
+                },
+                {
+                  key: '7',
+                  icon: <SettingOutlined />,
+                  label: <Link to="/settings">Settings</Link>,
                 },
               ]}
             />
@@ -231,6 +236,7 @@ const App: React.FC = () => {
                 <Route path="/purchase-orders/new" element={<CreatePurchaseOrderPage />} />
                 <Route path="/invoices" element={<InvoicesPage />} />
                 <Route path="/settings" element={<SettingsPage />} />
+                <Route path="/hr/departments" element={<DepartmentsPage />} />
                 <Route path="/hr/employees" element={<EmployeesPage />} />
                 <Route path="/hr/attendance" element={<AttendancePage />} />
                 <Route path="/hr/payroll" element={<PayrollPage />} />

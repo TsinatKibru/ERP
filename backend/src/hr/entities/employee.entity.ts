@@ -1,4 +1,5 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToMany } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToMany, ManyToOne } from 'typeorm';
+import { Department } from './department.entity';
 import { Attendance } from './attendance.entity';
 import { Payroll } from './payroll.entity';
 
@@ -25,8 +26,8 @@ export class Employee {
     @Column()
     jobTitle: string;
 
-    @Column()
-    department: string;
+    @ManyToOne(() => Department, (department) => department.employees)
+    department: Department;
 
     @Column({ type: 'decimal', precision: 12, scale: 2 })
     salary: number;
