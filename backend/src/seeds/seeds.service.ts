@@ -83,6 +83,7 @@ export class SeedsService {
     async seedSettings() {
         await this.settingsService.setBulk([
             { key: 'company_name', value: 'Antigravity ERP Solutions', category: 'company' },
+            { key: 'company_short_name', value: 'ANTIGRAVITY', category: 'company' },
             { key: 'company_address', value: '123 Innovation Drive, Silicon Valley, CA', category: 'company' },
             { key: 'company_email', value: 'contact@antigravity-erp.com', category: 'company' },
             { key: 'company_phone', value: '+1-555-0199', category: 'company' },

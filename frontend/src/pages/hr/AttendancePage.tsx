@@ -1,8 +1,14 @@
 import React from 'react';
-import { Table, Typography, Card, Button, Form, DatePicker, Select, message, Modal, Input, Space, Segmented } from 'antd';
+import { Table, Typography, Card, Button, Form, DatePicker, Select, message, Modal, Input, Space, Dropdown, Tag } from 'antd';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 import dayjs from 'dayjs';
+import {
+    CheckCircleOutlined,
+    CloseCircleOutlined,
+    ClockCircleOutlined,
+    LogoutOutlined
+} from '@ant-design/icons';
 import keycloak from '../../auth/keycloak';
 
 const { Title } = Typography;
@@ -125,19 +131,56 @@ const AttendancePage: React.FC = () => {
             title: 'Status',
             dataIndex: 'status',
             key: 'status',
-            render: (status: string, record: Attendance) => (
-                <Segmented
-                    value={status}
-                    size="small"
-                    options={[
-                        { label: 'PRESENT', value: 'present' },
-                        { label: 'ABSENT', value: 'absent' },
-                        { label: 'LATE', value: 'late' },
-                        { label: 'LEAVE', value: 'leave' },
-                    ]}
-                    onChange={(val) => statusMutation.mutate({ id: record.id, status: val as string })}
-                />
-            ),
+            render: (status: string, record: Attendance) => {
+                const statusConfig: Record<string, { color: string; label: string; icon: any }> = {
+                    present: { color: '#52c41a', label: 'PRESENT', icon: <CheckCircleOutlined /> },
+                    absent: { color: '#ff4d4f', label: 'ABSENT', icon: <CloseCircleOutlined /> },
+                    late: { color: '#faad14', label: 'LATE', icon: <ClockCircleOutlined /> },
+                    leave: { color: '#1890ff', label: 'LEAVE', icon: <LogoutOutlined /> },
+                };
+
+                // Safety check for null/undefined status
+                const currentStatus = status || 'present';
+                const config = statusConfig[currentStatus] || {
+                    color: '#d9d9d9',
+                    label: (currentStatus || 'UNKNOWN').toUpperCase(),
+                    icon: null
+                };
+
+                const statusItems = [
+                    { key: 'present', label: 'Present', icon: <CheckCircleOutlined style={{ color: '#52c41a' }} /> },
+                    { key: 'absent', label: 'Absent', icon: <CloseCircleOutlined style={{ color: '#ff4d4f' }} /> },
+                    { key: 'late', label: 'Late', icon: <ClockCircleOutlined style={{ color: '#faad14' }} /> },
+                    { key: 'leave', label: 'Leave', icon: <LogoutOutlined style={{ color: '#1890ff' }} /> },
+                ];
+
+                return (
+                    <Dropdown
+                        menu={{
+                            items: statusItems,
+                            onClick: (e) => statusMutation.mutate({ id: record.id, status: e.key })
+                        }}
+                        trigger={['click']}
+                    >
+                        <Tag
+                            color={config.color}
+                            icon={config.icon}
+                            style={{
+                                cursor: 'pointer',
+                                borderRadius: '6px',
+                                padding: '4px 12px',
+                                fontWeight: 700,
+                                fontSize: '12px',
+                                border: 'none',
+                                color: '#ffffff',
+                                boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                            }}
+                        >
+                            {config.label}
+                        </Tag>
+                    </Dropdown>
+                );
+            },
         },
         { title: 'Note', dataIndex: 'note', key: 'note' },
     ];

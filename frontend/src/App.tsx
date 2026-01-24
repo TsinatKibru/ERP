@@ -12,7 +12,7 @@ import {
 } from '@ant-design/icons';
 import { Layout, Menu, Button, theme, Spin } from 'antd';
 import { Routes, Route, Link, useLocation } from 'react-router-dom';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import ProductsPage from './pages/inventory/ProductsPage';
 import CustomersPage from './pages/sales/CustomersPage';
@@ -37,12 +37,24 @@ import './index.css';
 
 const { Header, Sider, Content } = Layout;
 
-const queryClient = new QueryClient();
-
 const App: React.FC = () => {
   const [collapsed, setCollapsed] = useState(false);
   const [authenticated, setAuthenticated] = useState<boolean | null>(null);
   const location = useLocation();
+
+  const { data: settings } = useQuery({
+    queryKey: ['settings'],
+    queryFn: async () => {
+      const { data } = await axios.get('http://localhost:3000/settings', {
+        headers: { Authorization: `Bearer ${keycloak.token}` },
+      });
+      return data;
+    },
+    enabled: !!authenticated,
+  });
+
+  const companyName = settings?.find((s: any) => s.key === 'company_name')?.value || 'ANTIGRAVITY';
+  const shortName = settings?.find((s: any) => s.key === 'company_short_name')?.value || 'AG';
 
   useEffect(() => {
     const initKeycloak = async () => {
@@ -101,161 +113,163 @@ const App: React.FC = () => {
   }
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <Layout style={{ minHeight: '100vh' }}>
-        <Sider trigger={null} collapsible collapsed={collapsed}>
-          <div style={{
-            height: 64,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            color: 'white',
-            fontWeight: 'bold',
-            fontSize: collapsed ? 18 : 22,
-            borderBottom: '1px solid rgba(255,255,255,0.1)'
-          }}>
-            {collapsed ? 'AG' : 'ANTIGRAVITY'}
-          </div>
-          <Menu
-            theme="dark"
-            mode="inline"
-            selectedKeys={[location.pathname]}
-            items={[
-              {
-                key: '/',
-                icon: <DashboardOutlined />,
-                label: <Link to="/">Dashboard</Link>,
-              },
-              {
-                key: '/users',
-                icon: <UserOutlined />,
-                label: <Link to="/users">Users</Link>,
-              },
-              {
-                key: '3',
-                icon: <ShopOutlined />,
-                label: 'Inventory',
-                children: [
-                  {
-                    key: '/categories',
-                    label: <Link to="/categories">Categories</Link>,
-                  },
-                  {
-                    key: '/products',
-                    label: <Link to="/products">Products</Link>,
-                  },
-                ],
-              },
-              {
-                key: '4',
-                icon: <TransactionOutlined />,
-                label: 'Sales',
-                children: [
-                  {
-                    key: '/customers',
-                    label: <Link to="/customers">Customers</Link>,
-                  },
-                  {
-                    key: '/orders',
-                    label: <Link to="/orders">Orders</Link>,
-                  },
-                ],
-              },
-              {
-                key: '5',
-                icon: <ContactsOutlined />,
-                label: 'Procurement',
-                children: [
-                  {
-                    key: '/suppliers',
-                    label: <Link to="/suppliers">Suppliers</Link>,
-                  },
-                  {
-                    key: '/purchase-orders',
-                    label: <Link to="/purchase-orders">Purchase Orders</Link>,
-                  },
-                ],
-              },
-              {
-                key: '/invoices',
-                icon: <WalletOutlined />,
-                label: <Link to="/invoices">Finance</Link>,
-              },
-              {
-                key: '8',
-                icon: <UserOutlined />,
-                label: 'HR',
-                children: [
-                  {
-                    key: '/hr/departments',
-                    label: <Link to="/hr/departments">Departments</Link>,
-                  },
-                  {
-                    key: '/hr/employees',
-                    label: <Link to="/hr/employees">Employees</Link>,
-                  },
-                  {
-                    key: '/hr/attendance',
-                    label: <Link to="/hr/attendance">Attendance</Link>,
-                  },
-                  {
-                    key: '/hr/payroll',
-                    label: <Link to="/hr/payroll">Payroll</Link>,
-                  },
-                ],
-              },
-              {
-                key: '/settings',
-                icon: <SettingOutlined />,
-                label: <Link to="/settings">Settings</Link>,
-              },
-            ]}
-          />
-        </Sider>
-        <Layout>
-          <Header style={{ padding: 0, background: colorBgContainer }}>
-            <Button
-              type="text"
-              icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
-              onClick={() => setCollapsed(!collapsed)}
-              style={{
-                fontSize: '16px',
-                width: 64,
-                height: 64,
-              }}
-            />
-          </Header>
-          <Content
+    <Layout style={{ minHeight: '100vh' }}>
+      <Sider trigger={null} collapsible collapsed={collapsed}>
+        <div style={{
+          height: 64,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          color: 'white',
+          fontWeight: 'bold',
+          fontSize: collapsed ? 18 : 18,
+          borderBottom: '1px solid rgba(255,255,255,0.1)',
+          padding: '0 10px',
+          overflow: 'hidden',
+          whiteSpace: 'nowrap',
+          textOverflow: 'ellipsis'
+        }}>
+          {collapsed ? shortName : companyName}
+        </div>
+        <Menu
+          theme="dark"
+          mode="inline"
+          selectedKeys={[location.pathname]}
+          items={[
+            {
+              key: '/',
+              icon: <DashboardOutlined />,
+              label: <Link to="/">Dashboard</Link>,
+            },
+            {
+              key: '/users',
+              icon: <UserOutlined />,
+              label: <Link to="/users">Users</Link>,
+            },
+            {
+              key: '3',
+              icon: <ShopOutlined />,
+              label: 'Inventory',
+              children: [
+                {
+                  key: '/categories',
+                  label: <Link to="/categories">Categories</Link>,
+                },
+                {
+                  key: '/products',
+                  label: <Link to="/products">Products</Link>,
+                },
+              ],
+            },
+            {
+              key: '4',
+              icon: <TransactionOutlined />,
+              label: 'Sales',
+              children: [
+                {
+                  key: '/customers',
+                  label: <Link to="/customers">Customers</Link>,
+                },
+                {
+                  key: '/orders',
+                  label: <Link to="/orders">Orders</Link>,
+                },
+              ],
+            },
+            {
+              key: '5',
+              icon: <ContactsOutlined />,
+              label: 'Procurement',
+              children: [
+                {
+                  key: '/suppliers',
+                  label: <Link to="/suppliers">Suppliers</Link>,
+                },
+                {
+                  key: '/purchase-orders',
+                  label: <Link to="/purchase-orders">Purchase Orders</Link>,
+                },
+              ],
+            },
+            {
+              key: '/invoices',
+              icon: <WalletOutlined />,
+              label: <Link to="/invoices">Finance</Link>,
+            },
+            {
+              key: '8',
+              icon: <UserOutlined />,
+              label: 'HR',
+              children: [
+                {
+                  key: '/hr/departments',
+                  label: <Link to="/hr/departments">Departments</Link>,
+                },
+                {
+                  key: '/hr/employees',
+                  label: <Link to="/hr/employees">Employees</Link>,
+                },
+                {
+                  key: '/hr/attendance',
+                  label: <Link to="/hr/attendance">Attendance</Link>,
+                },
+                {
+                  key: '/hr/payroll',
+                  label: <Link to="/hr/payroll">Payroll</Link>,
+                },
+              ],
+            },
+            {
+              key: '/settings',
+              icon: <SettingOutlined />,
+              label: <Link to="/settings">Settings</Link>,
+            },
+          ]}
+        />
+      </Sider>
+      <Layout>
+        <Header style={{ padding: 0, background: colorBgContainer }}>
+          <Button
+            type="text"
+            icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+            onClick={() => setCollapsed(!collapsed)}
             style={{
-              margin: '24px 16px',
-              padding: 24,
-              minHeight: 280,
-              background: colorBgContainer,
-              borderRadius: borderRadiusLG,
+              fontSize: '16px',
+              width: 64,
+              height: 64,
             }}
-          >
-            <Routes>
-              <Route path="/" element={<DashboardPage />} />
-              <Route path="/users" element={<UsersPage />} />
-              <Route path="/categories" element={<CategoriesPage />} />
-              <Route path="/products" element={<ProductsPage />} />
-              <Route path="/customers" element={<CustomersPage />} />
-              <Route path="/orders" element={<OrdersPage />} />
-              <Route path="/orders/new" element={<CreateOrderPage />} />
-              <Route path="/suppliers" element={<SuppliersPage />} />
-              <Route path="/purchase-orders" element={<PurchaseOrdersPage />} />
-              <Route path="/purchase-orders/new" element={<CreatePurchaseOrderPage />} />
-              <Route path="/invoices" element={<InvoicesPage />} />
-              <Route path="/settings" element={<SettingsPage />} />
-              <Route path="/hr/departments" element={<DepartmentsPage />} />
-              <Route path="/hr/employees" element={<EmployeesPage />} />
-              <Route path="/hr/attendance" element={<AttendancePage />} />
-              <Route path="/hr/payroll" element={<PayrollPage />} />
-            </Routes>
-          </Content>
-        </Layout>
+          />
+        </Header>
+        <Content
+          style={{
+            margin: '24px 16px',
+            padding: 24,
+            minHeight: 280,
+            background: colorBgContainer,
+            borderRadius: borderRadiusLG,
+          }}
+        >
+          <Routes>
+            <Route path="/" element={<DashboardPage />} />
+            <Route path="/users" element={<UsersPage />} />
+            <Route path="/categories" element={<CategoriesPage />} />
+            <Route path="/products" element={<ProductsPage />} />
+            <Route path="/customers" element={<CustomersPage />} />
+            <Route path="/orders" element={<OrdersPage />} />
+            <Route path="/orders/new" element={<CreateOrderPage />} />
+            <Route path="/suppliers" element={<SuppliersPage />} />
+            <Route path="/purchase-orders" element={<PurchaseOrdersPage />} />
+            <Route path="/purchase-orders/new" element={<CreatePurchaseOrderPage />} />
+            <Route path="/invoices" element={<InvoicesPage />} />
+            <Route path="/settings" element={<SettingsPage />} />
+            <Route path="/hr/departments" element={<DepartmentsPage />} />
+            <Route path="/hr/employees" element={<EmployeesPage />} />
+            <Route path="/hr/attendance" element={<AttendancePage />} />
+            <Route path="/hr/payroll" element={<PayrollPage />} />
+          </Routes>
+        </Content>
       </Layout>
-    </QueryClientProvider>
+    </Layout>
   );
 };
 
