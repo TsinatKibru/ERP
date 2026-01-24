@@ -7,6 +7,13 @@ import { Link } from 'react-router-dom';
 
 const { Title } = Typography;
 
+interface PurchaseOrderItem {
+    id: string;
+    product: { name: string };
+    quantity: number;
+    unitPrice: number;
+}
+
 interface PurchaseOrder {
     id: string;
     poNumber: string;
@@ -14,6 +21,7 @@ interface PurchaseOrder {
     status: string;
     createdAt: string;
     supplier: { name: string };
+    items: PurchaseOrderItem[];
 }
 
 const PurchaseOrdersPage: React.FC = () => {
@@ -93,6 +101,35 @@ const PurchaseOrdersPage: React.FC = () => {
         },
     ];
 
+    const expandedRowRender = (record: PurchaseOrder) => {
+        const itemColumns = [
+            { title: 'Product', dataIndex: ['product', 'name'], key: 'product' },
+            { title: 'Quantity', dataIndex: 'quantity', key: 'quantity' },
+            {
+                title: 'Unit Price',
+                dataIndex: 'unitPrice',
+                key: 'unitPrice',
+                render: (val: number) => `$${Number(val).toFixed(2)}`,
+            },
+            {
+                title: 'Subtotal',
+                key: 'subtotal',
+                render: (row: any) => `$${(row.quantity * row.unitPrice).toFixed(2)}`,
+            },
+        ];
+
+        return (
+            <Table
+                columns={itemColumns}
+                dataSource={record.items}
+                pagination={false}
+                rowKey="id"
+                size="small"
+                bordered
+            />
+        );
+    };
+
     return (
         <div>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16 }}>
@@ -103,7 +140,13 @@ const PurchaseOrdersPage: React.FC = () => {
             </div>
 
             <Card>
-                <Table dataSource={pos} columns={columns} loading={isLoading} rowKey="id" />
+                <Table
+                    dataSource={pos}
+                    columns={columns}
+                    loading={isLoading}
+                    rowKey="id"
+                    expandable={{ expandedRowRender }}
+                />
             </Card>
         </div>
     );

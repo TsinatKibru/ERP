@@ -7,6 +7,13 @@ import { Link } from 'react-router-dom';
 
 const { Title } = Typography;
 
+interface OrderItem {
+    id: string;
+    product: { name: string };
+    quantity: number;
+    unitPrice: number;
+}
+
 interface Order {
     id: string;
     orderNumber: string;
@@ -14,7 +21,7 @@ interface Order {
     status: string;
     createdAt: string;
     customer: { name: string };
-    items: any[];
+    items: OrderItem[];
 }
 
 const OrdersPage: React.FC = () => {
@@ -85,6 +92,35 @@ const OrdersPage: React.FC = () => {
         },
     ];
 
+    const expandedRowRender = (record: Order) => {
+        const itemColumns = [
+            { title: 'Product', dataIndex: ['product', 'name'], key: 'product' },
+            { title: 'Quantity', dataIndex: 'quantity', key: 'quantity' },
+            {
+                title: 'Unit Price',
+                dataIndex: 'unitPrice',
+                key: 'unitPrice',
+                render: (val: number) => `$${Number(val).toFixed(2)}`,
+            },
+            {
+                title: 'Subtotal',
+                key: 'subtotal',
+                render: (row: any) => `$${(row.quantity * row.unitPrice).toFixed(2)}`,
+            },
+        ];
+
+        return (
+            <Table
+                columns={itemColumns}
+                dataSource={record.items}
+                pagination={false}
+                rowKey="id"
+                size="small"
+                bordered
+            />
+        );
+    };
+
     return (
         <div>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16 }}>
@@ -95,7 +131,13 @@ const OrdersPage: React.FC = () => {
             </div>
 
             <Card>
-                <Table dataSource={orders} columns={columns} loading={isLoading} rowKey="id" />
+                <Table
+                    dataSource={orders}
+                    columns={columns}
+                    loading={isLoading}
+                    rowKey="id"
+                    expandable={{ expandedRowRender }}
+                />
             </Card>
         </div>
     );

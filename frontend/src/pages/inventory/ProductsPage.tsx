@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Table, Button, Typography, Card, Modal, Form, Input, InputNumber, Select, message, Tag } from 'antd';
+import { Table, Button, Typography, Card, Modal, Form, Input, InputNumber, Select, message, Tag, Space, Popconfirm } from 'antd';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 import keycloak from '../../auth/keycloak';
@@ -22,6 +22,7 @@ interface Product {
 
 const ProductsPage: React.FC = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [editingProduct, setEditingProduct] = useState<Product | null>(null);
     const [form] = Form.useForm();
     const queryClient = useQueryClient();
 
@@ -54,8 +55,20 @@ const ProductsPage: React.FC = () => {
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['products'] });
             message.success('Product created');
-            setIsModalOpen(false);
-            form.resetFields();
+            handleCancel();
+        },
+    });
+
+    const updateMutation = useMutation({
+        mutationFn: async (values: any) => {
+            await axios.patch(`http://localhost:3000/products/${editingProduct?.id}`, values, {
+                headers: { Authorization: `Bearer ${keycloak.token}` },
+            });
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['products'] });
+            message.success('Product updated');
+            handleCancel();
         },
     });
 
@@ -70,6 +83,21 @@ const ProductsPage: React.FC = () => {
             message.success('Product deleted');
         },
     });
+
+    const handleEdit = (product: Product) => {
+        setEditingProduct(product);
+        setIsModalOpen(true);
+        form.setFieldsValue({
+            ...product,
+            category: product.category.id
+        });
+    };
+
+    const handleCancel = () => {
+        setIsModalOpen(false);
+        setEditingProduct(null);
+        form.resetFields();
+    };
 
     const columns = [
         { title: 'Name', dataIndex: 'name', key: 'name' },
@@ -97,9 +125,22 @@ const ProductsPage: React.FC = () => {
             title: 'Action',
             key: 'action',
             render: (_: any, record: Product) => (
-                <Button danger type="link" onClick={() => deleteMutation.mutate(record.id)}>
-                    Delete
-                </Button>
+                <Space>
+                    <Button type="link" onClick={() => handleEdit(record)}>
+                        Edit
+                    </Button>
+                    <Popconfirm
+                        title="Delete Product"
+                        description="Are you sure you want to delete this product? This action cannot be undone."
+                        onConfirm={() => deleteMutation.mutate(record.id)}
+                        okText="Yes"
+                        cancelText="No"
+                    >
+                        <Button danger type="link">
+                            Delete
+                        </Button>
+                    </Popconfirm>
+                </Space>
             ),
         },
     ];
@@ -118,13 +159,13 @@ const ProductsPage: React.FC = () => {
             </Card>
 
             <Modal
-                title="Create Product"
+                title={editingProduct ? "Edit Product" : "Create Product"}
                 open={isModalOpen}
-                onCancel={() => setIsModalOpen(false)}
+                onCancel={handleCancel}
                 onOk={() => form.submit()}
-                confirmLoading={createMutation.isPending}
+                confirmLoading={createMutation.isPending || updateMutation.isPending}
             >
-                <Form form={form} layout="vertical" onFinish={(v) => createMutation.mutate(v)}>
+                <Form form={form} layout="vertical" onFinish={(v) => editingProduct ? updateMutation.mutate(v) : createMutation.mutate(v)}>
                     <Form.Item name="name" label="Name" rules={[{ required: true }]}>
                         <Input />
                     </Form.Item>

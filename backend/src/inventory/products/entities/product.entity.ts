@@ -1,5 +1,6 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, CreateDateColumn, UpdateDateColumn } from 'typeorm';
 import { Category } from '../../categories/entities/category.entity';
+import { PurchaseOrderItem } from '../../../procurement/purchase-orders/entities/purchase-order-item.entity';
 
 @Entity('products')
 export class Product {
@@ -20,6 +21,9 @@ export class Product {
 
     @ManyToOne(() => Category, (category) => category.products, { onDelete: 'CASCADE' })
     category: Category;
+
+    @OneToMany(() => PurchaseOrderItem, (item) => item.product)
+    purchaseHistory: PurchaseOrderItem[];
 
     @CreateDateColumn()
     createdAt: Date;
