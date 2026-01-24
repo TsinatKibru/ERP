@@ -1,5 +1,5 @@
 import React from 'react';
-import { Table, Typography, Card, Button, Form, DatePicker, Select, message, Modal, Input, Space } from 'antd';
+import { Table, Typography, Card, Button, Form, DatePicker, Select, message, Modal, Input, Space, Segmented } from 'antd';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 import dayjs from 'dayjs';
@@ -126,17 +126,17 @@ const AttendancePage: React.FC = () => {
             dataIndex: 'status',
             key: 'status',
             render: (status: string, record: Attendance) => (
-                <Select
+                <Segmented
                     value={status}
                     size="small"
-                    style={{ width: 100 }}
-                    onChange={(val) => statusMutation.mutate({ id: record.id, status: val })}
-                >
-                    <Select.Option value="present">PRESENT</Select.Option>
-                    <Select.Option value="absent">ABSENT</Select.Option>
-                    <Select.Option value="late">LATE</Select.Option>
-                    <Select.Option value="leave">LEAVE</Select.Option>
-                </Select>
+                    options={[
+                        { label: 'PRESENT', value: 'present' },
+                        { label: 'ABSENT', value: 'absent' },
+                        { label: 'LATE', value: 'late' },
+                        { label: 'LEAVE', value: 'leave' },
+                    ]}
+                    onChange={(val) => statusMutation.mutate({ id: record.id, status: val as string })}
+                />
             ),
         },
         { title: 'Note', dataIndex: 'note', key: 'note' },

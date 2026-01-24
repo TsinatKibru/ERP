@@ -50,14 +50,14 @@ const EmployeesPage: React.FC = () => {
             const payload = {
                 ...values,
                 hireDate: values.hireDate.format('YYYY-MM-DD'),
-                department: { id: values.departmentId }
             };
             if (editingEmployee) {
                 await axios.patch(`http://localhost:3000/hr/employees/${editingEmployee.id}`, payload, {
                     headers: { Authorization: `Bearer ${keycloak.token}` },
                 });
             } else {
-                await axios.post('http://localhost:3000/hr/employees', payload, {
+                // For create, backend expects department object usually, but I'll make it handle both.
+                await axios.post('http://localhost:3000/hr/employees', { ...payload, department: { id: values.departmentId } }, {
                     headers: { Authorization: `Bearer ${keycloak.token}` },
                 });
             }

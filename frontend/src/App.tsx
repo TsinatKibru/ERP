@@ -104,7 +104,18 @@ const App: React.FC = () => {
     <QueryClientProvider client={queryClient}>
       <Layout style={{ minHeight: '100vh' }}>
         <Sider trigger={null} collapsible collapsed={collapsed}>
-          <div className="demo-logo-vertical" style={{ height: 32, margin: 16, background: 'rgba(255, 255, 255, .2)', borderRadius: 6 }} />
+          <div style={{
+            height: 64,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            color: 'white',
+            fontWeight: 'bold',
+            fontSize: collapsed ? 18 : 22,
+            borderBottom: '1px solid rgba(255,255,255,0.1)'
+          }}>
+            {collapsed ? 'AG' : 'ANTIGRAVITY'}
+          </div>
           <Menu
             theme="dark"
             mode="inline"

@@ -48,43 +48,43 @@ const DashboardPage: React.FC = () => {
 
             <Row gutter={[16, 16]}>
                 <Col xs={24} sm={12} lg={6}>
-                    <Card bordered={false}>
+                    <Card variant="borderless">
                         <Statistic
                             title="Total Revenue"
                             value={stats?.totalRevenue}
                             precision={2}
-                            valueStyle={{ color: '#3f8600' }}
+                            styles={{ content: { color: '#3f8600' } }}
                             prefix={<DollarCircleOutlined />}
                             suffix="$"
                         />
                     </Card>
                 </Col>
                 <Col xs={24} sm={12} lg={6}>
-                    <Card bordered={false}>
+                    <Card variant="borderless">
                         <Statistic
                             title="Accounts Receivable"
                             value={stats?.accountsReceivable}
                             precision={2}
-                            valueStyle={{ color: '#faad14' }}
+                            styles={{ content: { color: '#faad14' } }}
                             prefix={<DollarCircleOutlined />}
                             suffix="$"
                         />
                     </Card>
                 </Col>
                 <Col xs={24} sm={12} lg={6}>
-                    <Card bordered={false}>
+                    <Card variant="borderless">
                         <Statistic
                             title="Accounts Payable"
                             value={stats?.accountsPayable}
                             precision={2}
-                            valueStyle={{ color: '#cf1322' }}
+                            styles={{ content: { color: '#cf1322' } }}
                             prefix={<DollarCircleOutlined />}
                             suffix="$"
                         />
                     </Card>
                 </Col>
                 <Col xs={24} sm={12} lg={6}>
-                    <Card bordered={false}>
+                    <Card variant="borderless">
                         <Statistic
                             title="Inventory Value"
                             value={stats?.inventoryValue}
