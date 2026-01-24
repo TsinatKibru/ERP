@@ -10,6 +10,7 @@ import { Layout, Menu, Button, theme, Spin } from 'antd';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import keycloak from './auth/keycloak';
+import UsersPage from './pages/UsersPage';
 
 const { Header, Sider, Content } = Layout;
 
@@ -90,7 +91,7 @@ const App: React.FC = () => {
             >
               <Routes>
                 <Route path="/" element={<h1>Welcome to ERP Dashboard</h1>} />
-                <Route path="/users" element={<h1>User Management</h1>} />
+                <Route path="/users" element={<UsersPage />} />
                 <Route path="/settings" element={<h1>System Settings</h1>} />
               </Routes>
             </Content>

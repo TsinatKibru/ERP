@@ -6,8 +6,10 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { HealthController } from './health.controller';
+import { ProfileController } from './profile.controller';
 import { AuthModule } from './auth/auth.module';
 import { redisStore } from 'cache-manager-ioredis-yet';
+import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [
@@ -58,8 +60,9 @@ import { redisStore } from 'cache-manager-ioredis-yet';
         inject: [ConfigService],
       },
     ]),
+    UsersModule,
   ],
-  controllers: [AppController, HealthController],
+  controllers: [AppController, HealthController, ProfileController],
   providers: [AppService],
 })
 export class AppModule { }
