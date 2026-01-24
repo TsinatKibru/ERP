@@ -34,7 +34,7 @@ export class AuthModule {}
 @Controller('users')
 export class UsersController {
   @Get()
-  @Roles({ roles: ['admin'] }) // Only admins can access this
+  @Roles({ roles: ['realm:admin'] }) // Crucial: use 'realm:' prefix for global roles
   async findAll() {
     return this.usersService.findAll();
   }
