@@ -109,7 +109,6 @@ const App: React.FC = () => {
             theme="dark"
             mode="inline"
             selectedKeys={[location.pathname]}
-            defaultOpenKeys={['3', '4', '5', '8']}
             items={[
               {
                 key: '/',
