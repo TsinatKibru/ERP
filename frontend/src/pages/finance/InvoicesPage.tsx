@@ -20,6 +20,7 @@ const InvoicesPage: React.FC = () => {
     const queryClient = useQueryClient();
     const [isPaymentModalOpen, setIsPaymentModalOpen] = React.useState(false);
     const [selectedInvoice, setSelectedInvoice] = React.useState<Invoice | null>(null);
+    const [downloadingId, setDownloadingId] = React.useState<string | null>(null);
     const [form] = Form.useForm();
 
     const { data: invoices, isLoading } = useQuery<Invoice[]>({
@@ -79,8 +80,27 @@ const InvoicesPage: React.FC = () => {
                 <Space>
                     <Button
                         icon={<FilePdfOutlined />}
-                        onClick={() => {
-                            window.open(`http://localhost:3000/invoices/${record.id}/pdf`, '_blank');
+                        loading={record.id === downloadingId}
+                        onClick={async () => {
+                            setDownloadingId(record.id);
+                            try {
+                                const response = await axios.get(`http://localhost:3000/invoices/${record.id}/pdf`, {
+                                    headers: { Authorization: `Bearer ${keycloak.token}` },
+                                    responseType: 'blob',
+                                });
+                                const url = window.URL.createObjectURL(new Blob([response.data]));
+                                const link = document.createElement('a');
+                                link.href = url;
+                                link.setAttribute('download', `invoice-${record.invoiceNumber}.pdf`);
+                                document.body.appendChild(link);
+                                link.click();
+                                link.remove();
+                                window.URL.revokeObjectURL(url);
+                            } catch (err) {
+                                message.error('Failed to download PDF');
+                            } finally {
+                                setDownloadingId(null);
+                            }
                         }}
                     >
                         PDF

@@ -27,6 +27,7 @@ interface PurchaseOrder {
 
 const PurchaseOrdersPage: React.FC = () => {
     const queryClient = useQueryClient();
+    const [downloadingId, setDownloadingId] = React.useState<string | null>(null);
 
     const { data: pos, isLoading } = useQuery<PurchaseOrder[]>({
         queryKey: ['purchase-orders'],
@@ -82,8 +83,27 @@ const PurchaseOrdersPage: React.FC = () => {
                 <Space>
                     <Button
                         icon={<FilePdfOutlined />}
-                        onClick={() => {
-                            window.open(`http://localhost:3000/purchase-orders/${record.id}/pdf`, '_blank');
+                        loading={record.id === downloadingId}
+                        onClick={async () => {
+                            setDownloadingId(record.id);
+                            try {
+                                const response = await axios.get(`http://localhost:3000/purchase-orders/${record.id}/pdf`, {
+                                    headers: { Authorization: `Bearer ${keycloak.token}` },
+                                    responseType: 'blob',
+                                });
+                                const url = window.URL.createObjectURL(new Blob([response.data]));
+                                const link = document.createElement('a');
+                                link.href = url;
+                                link.setAttribute('download', `purchase-order-${record.poNumber}.pdf`);
+                                document.body.appendChild(link);
+                                link.click();
+                                link.remove();
+                                window.URL.revokeObjectURL(url);
+                            } catch (err) {
+                                message.error('Failed to download PDF');
+                            } finally {
+                                setDownloadingId(null);
+                            }
                         }}
                     >
                         PDF
