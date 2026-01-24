@@ -2,7 +2,6 @@ import React from 'react';
 import { Row, Col, Card, Statistic, Typography, Table, Tag, List } from 'antd';
 import {
     DollarCircleOutlined,
-    ShoppingCartOutlined,
     WarningOutlined,
     ArrowUpOutlined,
 } from '@ant-design/icons';
@@ -14,6 +13,8 @@ const { Title, Text } = Typography;
 
 interface DashboardStats {
     totalRevenue: number;
+    accountsReceivable: number;
+    accountsPayable: number;
     ordersCount: {
         total: number;
         pending: number;
@@ -61,19 +62,24 @@ const DashboardPage: React.FC = () => {
                 <Col xs={24} sm={12} lg={6}>
                     <Card bordered={false}>
                         <Statistic
-                            title="Completed Orders"
-                            value={stats?.ordersCount.completed}
-                            prefix={<ShoppingCartOutlined />}
+                            title="Accounts Receivable"
+                            value={stats?.accountsReceivable}
+                            precision={2}
+                            valueStyle={{ color: '#faad14' }}
+                            prefix={<DollarCircleOutlined />}
+                            suffix="$"
                         />
                     </Card>
                 </Col>
                 <Col xs={24} sm={12} lg={6}>
                     <Card bordered={false}>
                         <Statistic
-                            title="Pending Orders"
-                            value={stats?.ordersCount.pending}
+                            title="Accounts Payable"
+                            value={stats?.accountsPayable}
+                            precision={2}
                             valueStyle={{ color: '#cf1322' }}
-                            prefix={<ShoppingCartOutlined />}
+                            prefix={<DollarCircleOutlined />}
+                            suffix="$"
                         />
                     </Card>
                 </Col>

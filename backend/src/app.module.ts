@@ -18,6 +18,7 @@ import { SeedsModule } from './seeds/seeds.module';
 import { DashboardModule } from './dashboard/dashboard.module';
 import { SuppliersModule } from './procurement/suppliers/suppliers.module';
 import { PurchaseOrdersModule } from './procurement/purchase-orders/purchase-orders.module';
+import { FinanceModule } from './finance/finance.module';
 
 @Module({
   imports: [
@@ -77,6 +78,7 @@ import { PurchaseOrdersModule } from './procurement/purchase-orders/purchase-ord
     DashboardModule,
     SuppliersModule,
     PurchaseOrdersModule,
+    FinanceModule,
   ],
   controllers: [AppController, HealthController, ProfileController],
   providers: [AppService],

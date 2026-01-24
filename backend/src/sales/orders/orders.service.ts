@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { Order, OrderStatus } from './entities/order.entity';
 import { OrderItem } from './entities/order-item.entity';
 import { Product } from '../../inventory/products/entities/product.entity';
+import { InvoicesService } from '../../finance/invoices/invoices.service';
 
 @Injectable()
 export class OrdersService {
@@ -14,6 +15,7 @@ export class OrdersService {
         private orderItemsRepository: Repository<OrderItem>,
         @InjectRepository(Product)
         private productsRepository: Repository<Product>,
+        private invoicesService: InvoicesService,
     ) { }
 
     async findAll(): Promise<Order[]> {
@@ -72,6 +74,13 @@ export class OrdersService {
     }
 
     async updateStatus(id: string, status: OrderStatus): Promise<Order> {
+        const order = await this.findOne(id);
+
+        // If status is changing to COMPLETED, generate an invoice
+        if (status === OrderStatus.COMPLETED && order.status !== OrderStatus.COMPLETED) {
+            await this.invoicesService.createFromOrder(order);
+        }
+
         await this.ordersRepository.update(id, { status });
         return this.findOne(id);
     }

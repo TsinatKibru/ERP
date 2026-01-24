@@ -8,6 +8,7 @@ import {
   ShopOutlined,
   ContactsOutlined,
   TransactionOutlined,
+  WalletOutlined,
 } from '@ant-design/icons';
 import { Layout, Menu, Button, theme, Spin } from 'antd';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
@@ -23,6 +24,7 @@ import DashboardPage from './pages/DashboardPage';
 import SuppliersPage from './pages/procurement/SuppliersPage';
 import PurchaseOrdersPage from './pages/procurement/PurchaseOrdersPage';
 import CreatePurchaseOrderPage from './pages/procurement/CreatePurchaseOrderPage';
+import InvoicesPage from './pages/finance/InvoicesPage';
 import keycloak from './auth/keycloak';
 
 // Remove default Vite styles that conflict with Ant Design
@@ -160,6 +162,11 @@ const App: React.FC = () => {
                 },
                 {
                   key: '6',
+                  icon: <WalletOutlined />,
+                  label: <Link to="/invoices">Finance</Link>,
+                },
+                {
+                  key: '7',
                   icon: <SettingOutlined />,
                   label: <Link to="/settings">Settings</Link>,
                 },
@@ -199,6 +206,7 @@ const App: React.FC = () => {
                 <Route path="/suppliers" element={<SuppliersPage />} />
                 <Route path="/purchase-orders" element={<PurchaseOrdersPage />} />
                 <Route path="/purchase-orders/new" element={<CreatePurchaseOrderPage />} />
+                <Route path="/invoices" element={<InvoicesPage />} />
                 <Route path="/settings" element={<h1>System Settings</h1>} />
               </Routes>
             </Content>
