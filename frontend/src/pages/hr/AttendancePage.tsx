@@ -134,7 +134,7 @@ const AttendancePage: React.FC = () => {
             render: (status: string, record: Attendance) => {
                 const statusConfig: Record<string, { color: string; label: string; icon: any }> = {
                     present: { color: '#52c41a', label: 'PRESENT', icon: <CheckCircleOutlined /> },
-                    absent: { color: '#ff4d4f', label: 'ABSENT', icon: <CloseCircleOutlined /> },
+                    absent: { color: '#f5222d', label: 'ABSENT', icon: <CloseCircleOutlined /> },
                     late: { color: '#faad14', label: 'LATE', icon: <ClockCircleOutlined /> },
                     leave: { color: '#1890ff', label: 'LEAVE', icon: <LogoutOutlined /> },
                 };
@@ -142,14 +142,14 @@ const AttendancePage: React.FC = () => {
                 // Safety check for null/undefined status
                 const currentStatus = status || 'present';
                 const config = statusConfig[currentStatus] || {
-                    color: '#d9d9d9',
+                    color: '#bfbfbf',
                     label: (currentStatus || 'UNKNOWN').toUpperCase(),
                     icon: null
                 };
 
                 const statusItems = [
                     { key: 'present', label: 'Present', icon: <CheckCircleOutlined style={{ color: '#52c41a' }} /> },
-                    { key: 'absent', label: 'Absent', icon: <CloseCircleOutlined style={{ color: '#ff4d4f' }} /> },
+                    { key: 'absent', label: 'Absent', icon: <CloseCircleOutlined style={{ color: '#f5222d' }} /> },
                     { key: 'late', label: 'Late', icon: <ClockCircleOutlined style={{ color: '#faad14' }} /> },
                     { key: 'leave', label: 'Leave', icon: <LogoutOutlined style={{ color: '#1890ff' }} /> },
                 ];
@@ -163,17 +163,21 @@ const AttendancePage: React.FC = () => {
                         trigger={['click']}
                     >
                         <Tag
-                            color={config.color}
                             icon={config.icon}
                             style={{
                                 cursor: 'pointer',
-                                borderRadius: '6px',
-                                padding: '4px 12px',
+                                borderRadius: '4px',
+                                padding: '3px 10px',
                                 fontWeight: 700,
-                                fontSize: '12px',
+                                fontSize: '11px',
                                 border: 'none',
+                                backgroundColor: config.color,
                                 color: '#ffffff',
-                                boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                                boxShadow: '0 1px 2px rgba(0,0,0,0.1)',
+                                textTransform: 'uppercase',
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '4px'
                             }}
                         >
                             {config.label}

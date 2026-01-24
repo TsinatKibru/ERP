@@ -129,7 +129,7 @@ const App: React.FC = () => {
           whiteSpace: 'nowrap',
           textOverflow: 'ellipsis'
         }}>
-          {collapsed ? shortName : companyName}
+          {collapsed ? shortName?.slice(0, 2).toUpperCase() : shortName}
         </div>
         <Menu
           theme="dark"
