@@ -53,4 +53,18 @@ export class AttendanceService {
 
         return this.attendanceRepository.save(attendance);
     }
+
+    async bulkRecord(data: { date: string; checkIn: string; checkOut: string }): Promise<{ count: number }> {
+        const activeEmployees = await this.employeesRepository.find({ where: { status: 'active' as any } });
+        for (const employee of activeEmployees) {
+            await this.record({
+                employeeId: employee.id,
+                date: data.date,
+                checkIn: data.checkIn,
+                checkOut: data.checkOut,
+                status: AttendanceStatus.PRESENT,
+            });
+        }
+        return { count: activeEmployees.length };
+    }
 }

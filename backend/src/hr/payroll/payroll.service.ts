@@ -58,4 +58,15 @@ export class PayrollService {
         payroll.status = status;
         return this.payrollRepository.save(payroll);
     }
+
+    async bulkGenerate(period: string): Promise<{ count: number }> {
+        const activeEmployees = await this.employeesRepository.find({ where: { status: 'active' as any } });
+        for (const employee of activeEmployees) {
+            await this.generate({
+                employeeId: employee.id,
+                period,
+            });
+        }
+        return { count: activeEmployees.length };
+    }
 }

@@ -18,6 +18,11 @@ export class PayrollController {
         return this.payrollService.generate(data);
     }
 
+    @Post('bulk')
+    async bulkGenerate(@Body('period') period: string): Promise<{ count: number }> {
+        return this.payrollService.bulkGenerate(period);
+    }
+
     @Patch(':id/status')
     async updateStatus(@Param('id') id: string, @Body('status') status: PayrollStatus): Promise<Payroll> {
         return this.payrollService.updateStatus(id, status);

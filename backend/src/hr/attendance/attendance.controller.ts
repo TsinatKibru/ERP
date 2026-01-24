@@ -25,4 +25,9 @@ export class AttendanceController {
     async record(@Body() data: { employeeId: string; date: string; checkIn?: string; checkOut?: string; status?: AttendanceStatus; note?: string }): Promise<Attendance> {
         return this.attendanceService.record(data);
     }
+
+    @Post('bulk')
+    async bulkRecord(@Body() data: { date: string; checkIn: string; checkOut: string }): Promise<{ count: number }> {
+        return this.attendanceService.bulkRecord(data);
+    }
 }

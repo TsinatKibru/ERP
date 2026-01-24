@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { Category } from '../inventory/categories/entities/category.entity';
 import { Product } from '../inventory/products/entities/product.entity';
 import { Supplier } from '../procurement/suppliers/entities/supplier.entity';
+import { Employee } from '../hr/entities/employee.entity';
 import { SettingsService } from '../settings/settings.service';
 
 @Injectable()
@@ -15,6 +16,8 @@ export class SeedsService {
         private productsRepository: Repository<Product>,
         @InjectRepository(Supplier)
         private suppliersRepository: Repository<Supplier>,
+        @InjectRepository(Employee)
+        private employeesRepository: Repository<Employee>,
         private settingsService: SettingsService,
     ) { }
 
@@ -83,5 +86,26 @@ export class SeedsService {
             { key: 'currency', value: 'USD', category: 'regional' },
         ]);
         return { message: 'System settings seeded successfully' };
+    }
+
+    async seedHR() {
+        const employeesData = [
+            { name: 'John Doe', email: 'john@antigravity.com', jobTitle: 'Software Engineer', department: 'Engineering', salary: 95000, hireDate: new Date('2024-01-15') },
+            { name: 'Jane Smith', email: 'jane@antigravity.com', jobTitle: 'HR Manager', department: 'HR', salary: 85000, hireDate: new Date('2023-11-20') },
+            { name: 'Bob Wilson', email: 'bob@antigravity.com', jobTitle: 'Sales Executive', department: 'Sales', salary: 75000, hireDate: new Date('2024-03-10') },
+            { name: 'Alice Brown', email: 'alice@antigravity.com', jobTitle: 'Finance Analyst', department: 'Finance', salary: 80000, hireDate: new Date('2024-02-01') },
+        ];
+
+        const savedEmployees = [];
+        for (const emp of employeesData) {
+            let employee = await this.employeesRepository.findOne({ where: { email: emp.email } });
+            if (!employee) {
+                const newEmployee = this.employeesRepository.create(emp as any);
+                employee = await this.employeesRepository.save(newEmployee) as unknown as Employee;
+            }
+            if (employee) savedEmployees.push(employee);
+        }
+
+        return { message: `HR data (${savedEmployees.length} employees) seeded successfully` };
     }
 }

@@ -5,6 +5,7 @@ import { SeedsController } from './seeds.controller';
 import { Category } from '../inventory/categories/entities/category.entity';
 import { Product } from '../inventory/products/entities/product.entity';
 import { Supplier } from '../procurement/suppliers/entities/supplier.entity';
+import { Employee } from '../hr/entities/employee.entity';
 import { CategoriesModule } from '../inventory/categories/categories.module';
 import { SettingsModule } from '../settings/settings.module';
 import { UsersModule } from '../users/users.module'; // Assuming this import is needed for UsersModule
@@ -12,7 +13,7 @@ import { SuppliersModule } from '../procurement/suppliers/suppliers.module'; // 
 
 @Module({
     imports: [
-        TypeOrmModule.forFeature([Category, Product, Supplier]),
+        TypeOrmModule.forFeature([Category, Product, Supplier, Employee]),
         UsersModule,
         SuppliersModule,
         CategoriesModule,

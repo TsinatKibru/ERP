@@ -17,4 +17,10 @@ export class SeedsController {
     async seedSettings() {
         return this.seedsService.seedSettings();
     }
+
+    @Public()
+    @Post('hr')
+    async seedHR() {
+        return this.seedsService.seedHR();
+    }
 }
