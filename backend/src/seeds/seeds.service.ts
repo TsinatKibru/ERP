@@ -5,6 +5,7 @@ import { Category } from '../inventory/categories/entities/category.entity';
 import { Product } from '../inventory/products/entities/product.entity';
 import { Supplier } from '../procurement/suppliers/entities/supplier.entity';
 import { Employee } from '../hr/entities/employee.entity';
+import { Department } from '../hr/entities/department.entity';
 import { SettingsService } from '../settings/settings.service';
 
 @Injectable()
@@ -18,6 +19,8 @@ export class SeedsService {
         private suppliersRepository: Repository<Supplier>,
         @InjectRepository(Employee)
         private employeesRepository: Repository<Employee>,
+        @InjectRepository(Department)
+        private departmentsRepository: Repository<Department>,
         private settingsService: SettingsService,
     ) { }
 
@@ -89,23 +92,50 @@ export class SeedsService {
     }
 
     async seedHR() {
+        const departmentsData = [
+            { name: 'Engineering', description: 'Software and hardware engineering' },
+            { name: 'HR', description: 'Human Resources and recruitment' },
+            { name: 'Sales', description: 'Sales and marketing' },
+            { name: 'Finance', description: 'Budgeting and accounting' },
+        ];
+
+        const savedDepts: Record<string, Department> = {};
+        for (const dept of departmentsData) {
+            let d = await this.departmentsRepository.findOne({ where: { name: dept.name } });
+            if (!d) {
+                d = this.departmentsRepository.create(dept);
+                d = await this.departmentsRepository.save(d);
+            }
+            savedDepts[dept.name] = d;
+        }
+
         const employeesData = [
-            { name: 'John Doe', email: 'john@antigravity.com', jobTitle: 'Software Engineer', department: 'Engineering', salary: 95000, hireDate: new Date('2024-01-15') },
-            { name: 'Jane Smith', email: 'jane@antigravity.com', jobTitle: 'HR Manager', department: 'HR', salary: 85000, hireDate: new Date('2023-11-20') },
-            { name: 'Bob Wilson', email: 'bob@antigravity.com', jobTitle: 'Sales Executive', department: 'Sales', salary: 75000, hireDate: new Date('2024-03-10') },
-            { name: 'Alice Brown', email: 'alice@antigravity.com', jobTitle: 'Finance Analyst', department: 'Finance', salary: 80000, hireDate: new Date('2024-02-01') },
+            { name: 'John Doe', email: 'john@antigravity.com', jobTitle: 'Software Engineer', departmentName: 'Engineering', salary: 95000, hireDate: new Date('2024-01-15') },
+            { name: 'Jane Smith', email: 'jane@antigravity.com', jobTitle: 'HR Manager', departmentName: 'HR', salary: 85000, hireDate: new Date('2023-11-20') },
+            { name: 'Bob Wilson', email: 'bob@antigravity.com', jobTitle: 'Sales Executive', departmentName: 'Sales', salary: 75000, hireDate: new Date('2024-03-10') },
+            { name: 'Alice Brown', email: 'alice@antigravity.com', jobTitle: 'Finance Analyst', departmentName: 'Finance', salary: 80000, hireDate: new Date('2024-02-01') },
         ];
 
         const savedEmployees = [];
         for (const emp of employeesData) {
             let employee = await this.employeesRepository.findOne({ where: { email: emp.email } });
+            const { departmentName, ...empProps } = emp;
+            const payload = {
+                ...empProps,
+                department: savedDepts[departmentName],
+            };
+
             if (!employee) {
-                const newEmployee = this.employeesRepository.create(emp as any);
+                const newEmployee = this.employeesRepository.create(payload as any);
                 employee = await this.employeesRepository.save(newEmployee) as unknown as Employee;
+            } else {
+                // Update department if it exists now
+                employee.department = savedDepts[departmentName];
+                employee = await this.employeesRepository.save(employee) as unknown as Employee;
             }
             if (employee) savedEmployees.push(employee);
         }
 
-        return { message: `HR data (${savedEmployees.length} employees) seeded successfully` };
+        return { message: `HR data (${Object.keys(savedDepts).length} depts, ${savedEmployees.length} employees) seeded successfully` };
     }
 }
