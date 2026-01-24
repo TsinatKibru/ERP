@@ -6,6 +6,13 @@ import { Product } from '../inventory/products/entities/product.entity';
 import { Invoice, InvoiceStatus } from '../finance/invoices/entities/invoice.entity';
 import { PurchaseOrder } from '../procurement/purchase-orders/entities/purchase-order.entity';
 
+export interface TrendMonth {
+    month: string;
+    year: number;
+    revenue: number;
+    orders: number;
+}
+
 @Injectable()
 export class DashboardService {
     constructor(
@@ -49,8 +56,12 @@ export class DashboardService {
                 category: p.category?.name
             }));
 
-        // Simple top selling products (by count in completed orders)
-        // This is a basic implementation; in a real app, you'd use a query builder for efficiency
+        // Sales Trend (last 6 months)
+        const salesTrend = this.calculateSalesTrend(orders);
+
+        // Category Distribution
+        const categoryDistribution = this.calculateCategoryDistribution(products);
+
         return {
             totalRevenue,
             accountsReceivable,
@@ -61,7 +72,57 @@ export class DashboardService {
                 completed: completedOrders,
             },
             lowStockAlerts: lowStockProducts,
-            inventoryValue: products.reduce((sum, p) => sum + (Number(p.price) * p.stockLevel), 0)
+            inventoryValue: products.reduce((sum, p) => sum + (Number(p.price) * p.stockLevel), 0),
+            salesTrend,
+            categoryDistribution
         };
+    }
+
+    private calculateSalesTrend(orders: Order[]): TrendMonth[] {
+        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        const last6Months: TrendMonth[] = [];
+        const now = new Date();
+
+        for (let i = 5; i >= 0; i--) {
+            const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+            last6Months.push({
+                month: months[d.getMonth()],
+                year: d.getFullYear(),
+                revenue: 0,
+                orders: 0
+            });
+        }
+
+        orders.forEach(order => {
+            const orderDate = new Date(order.createdAt);
+            const trendMonth = last6Months.find(m =>
+                m.month === months[orderDate.getMonth()] &&
+                m.year === orderDate.getFullYear()
+            );
+
+            if (trendMonth) {
+                trendMonth.orders++;
+                if (order.status === OrderStatus.COMPLETED) {
+                    trendMonth.revenue += Number(order.totalAmount);
+                }
+            }
+        });
+
+        return last6Months;
+    }
+
+    private calculateCategoryDistribution(products: Product[]) {
+        const distribution: Record<string, { name: string; value: number; count: number }> = {};
+
+        products.forEach(p => {
+            const catName = p.category?.name || 'Uncategorized';
+            if (!distribution[catName]) {
+                distribution[catName] = { name: catName, value: 0, count: 0 };
+            }
+            distribution[catName].count++;
+            distribution[catName].value += Number(p.price) * p.stockLevel;
+        });
+
+        return Object.values(distribution);
     }
 }

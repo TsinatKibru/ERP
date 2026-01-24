@@ -8,6 +8,8 @@ import {
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import keycloak from '../auth/keycloak';
+import SalesTrendChart from '../components/analytics/SalesTrendChart';
+import CategoryPieChart from '../components/analytics/CategoryPieChart';
 
 const { Title, Text } = Typography;
 
@@ -27,6 +29,16 @@ interface DashboardStats {
         category: string;
     }[];
     inventoryValue: number;
+    salesTrend: {
+        month: string;
+        revenue: number;
+        orders: number;
+    }[];
+    categoryDistribution: {
+        name: string;
+        value: number;
+        count: number;
+    }[];
 }
 
 const DashboardPage: React.FC = () => {
@@ -92,6 +104,19 @@ const DashboardPage: React.FC = () => {
                             prefix={<ArrowUpOutlined />}
                             suffix="$"
                         />
+                    </Card>
+                </Col>
+            </Row>
+
+            <Row gutter={[16, 16]} style={{ marginTop: 24 }}>
+                <Col xs={24} lg={16}>
+                    <Card variant="borderless" style={{ height: '100%', overflow: 'hidden' }}>
+                        <SalesTrendChart data={stats?.salesTrend || []} />
+                    </Card>
+                </Col>
+                <Col xs={24} lg={8}>
+                    <Card variant="borderless" style={{ height: '100%', overflow: 'hidden' }}>
+                        <CategoryPieChart data={stats?.categoryDistribution || []} />
                     </Card>
                 </Col>
             </Row>

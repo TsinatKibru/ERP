@@ -22,6 +22,10 @@ import { FinanceModule } from './finance/finance.module';
 import { ReportingModule } from './reporting/reporting.module';
 import { SettingsModule } from './settings/settings.module';
 import { HRModule } from './hr/hr.module';
+import { AdjustmentsModule } from './inventory/adjustments/adjustments.module';
+import { LedgerModule } from './inventory/ledger/ledger.module';
+import { SearchModule } from './search/search.module';
+import { AuditModule } from './audit/audit.module';
 
 @Module({
   imports: [
@@ -85,6 +89,10 @@ import { HRModule } from './hr/hr.module';
     ReportingModule,
     SettingsModule,
     HRModule,
+    AdjustmentsModule,
+    LedgerModule,
+    SearchModule,
+    AuditModule,
   ],
   controllers: [AppController, HealthController, ProfileController],
   providers: [AppService],

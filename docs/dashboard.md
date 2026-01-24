@@ -4,12 +4,12 @@ The Dashboard provides a high-level overview of the company's operational and fi
 
 ## Key Metrics (KPIs)
 - **Total Revenue**: Sum of all completed sales orders.
-* **Accounts Receivable (AR)**: Total value of all 'Unpaid' invoices.
-* **Accounts Payable (AP)**: Total value of all pending/cancelled purchase orders (liabilities).
-* **Inventory Value**: Monetary value of current stock (`Price * StockLevel`).
-- **Low Stock Alerts**: Real-time list of products with stock levels below 10 units.
+- **Accounts Receivable (AR)**: Total value of all 'Unpaid' invoices.
+- **Accounts Payable (AP)**: Total value of all pending/received purchase orders (liabilities).
+- **Inventory Value**: Monetary value of current stock (`Price * StockLevel`).
+- **Advanced Analytics**: Interactive charts for sales trends and inventory distribution (See [Analytics Documentation](./analytics.md)).
 
 ## Technical Implementation
-- **Backend**: `DashboardService` aggregates data from `Order`, `Product`, `Invoice`, and `PurchaseOrder` repositories.
-- **Frontend**: Utilizes `Statistic` components from Ant Design and custom tables for alerts.
-- **Refreshing**: Data is automatically refreshed via React Query when mutations (like receiving stock or completing orders) occur.
+- **Backend**: `DashboardService` aggregates data from multiple repositories and generates time-series trends.
+- **Frontend**: Utilizes Ant Design `Card`/`Statistic` components alongside **Recharts** for visualizations.
+- **Refreshing**: Data is automatically refreshed via React Query.

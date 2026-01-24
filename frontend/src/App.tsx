@@ -9,28 +9,32 @@ import {
   ContactsOutlined,
   TransactionOutlined,
   WalletOutlined,
+  SafetyOutlined,
 } from '@ant-design/icons';
 import { Layout, Menu, Button, theme, Spin } from 'antd';
 import { Routes, Route, Link, useLocation } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
+import DashboardPage from './pages/DashboardPage';
+import CategoriesPage from './pages/inventory/CategoriesPage';
 import ProductsPage from './pages/inventory/ProductsPage';
+import InventoryLedgerPage from './pages/inventory/InventoryLedgerPage';
 import CustomersPage from './pages/sales/CustomersPage';
 import OrdersPage from './pages/sales/OrdersPage';
 import CreateOrderPage from './pages/sales/CreateOrderPage';
 import UsersPage from './pages/UsersPage';
-import CategoriesPage from './pages/inventory/CategoriesPage';
-import DashboardPage from './pages/DashboardPage';
 import SuppliersPage from './pages/procurement/SuppliersPage';
 import PurchaseOrdersPage from './pages/procurement/PurchaseOrdersPage';
 import CreatePurchaseOrderPage from './pages/procurement/CreatePurchaseOrderPage';
 import InvoicesPage from './pages/finance/InvoicesPage';
 import SettingsPage from './pages/SettingsPage';
+import AuditLogPage from './pages/AuditLogPage';
 import EmployeesPage from './pages/hr/EmployeesPage';
 import DepartmentsPage from './pages/hr/DepartmentsPage';
 import AttendancePage from './pages/hr/AttendancePage';
 import PayrollPage from './pages/hr/PayrollPage';
 import keycloak from './auth/keycloak';
+import GlobalSearch from './components/GlobalSearch';
 
 // Remove default Vite styles that conflict with Ant Design
 import './index.css';
@@ -53,7 +57,6 @@ const App: React.FC = () => {
     enabled: !!authenticated,
   });
 
-  const companyName = settings?.find((s: any) => s.key === 'company_name')?.value || 'ANTIGRAVITY';
   const shortName = settings?.find((s: any) => s.key === 'company_short_name')?.value || 'AG';
 
   useEffect(() => {
@@ -159,6 +162,10 @@ const App: React.FC = () => {
                   key: '/products',
                   label: <Link to="/products">Products</Link>,
                 },
+                {
+                  key: '/inventory/ledger',
+                  label: <Link to="/inventory/ledger">Inventory Ledger</Link>,
+                },
               ],
             },
             {
@@ -220,6 +227,11 @@ const App: React.FC = () => {
               ],
             },
             {
+              key: '/audit',
+              icon: <SafetyOutlined />,
+              label: <Link to="/audit">Audit Trail</Link>,
+            },
+            {
               key: '/settings',
               icon: <SettingOutlined />,
               label: <Link to="/settings">Settings</Link>,
@@ -228,17 +240,20 @@ const App: React.FC = () => {
         />
       </Sider>
       <Layout>
-        <Header style={{ padding: 0, background: colorBgContainer }}>
-          <Button
-            type="text"
-            icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
-            onClick={() => setCollapsed(!collapsed)}
-            style={{
-              fontSize: '16px',
-              width: 64,
-              height: 64,
-            }}
-          />
+        <Header style={{ padding: '0 24px', background: colorBgContainer, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            <Button
+              type="text"
+              icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+              onClick={() => setCollapsed(!collapsed)}
+              style={{
+                fontSize: '16px',
+                width: 64,
+                height: 64,
+              }}
+            />
+            <GlobalSearch />
+          </div>
         </Header>
         <Content
           style={{
@@ -254,6 +269,7 @@ const App: React.FC = () => {
             <Route path="/users" element={<UsersPage />} />
             <Route path="/categories" element={<CategoriesPage />} />
             <Route path="/products" element={<ProductsPage />} />
+            <Route path="/inventory/ledger" element={<InventoryLedgerPage />} />
             <Route path="/customers" element={<CustomersPage />} />
             <Route path="/orders" element={<OrdersPage />} />
             <Route path="/orders/new" element={<CreateOrderPage />} />
@@ -261,6 +277,7 @@ const App: React.FC = () => {
             <Route path="/purchase-orders" element={<PurchaseOrdersPage />} />
             <Route path="/purchase-orders/new" element={<CreatePurchaseOrderPage />} />
             <Route path="/invoices" element={<InvoicesPage />} />
+            <Route path="/audit" element={<AuditLogPage />} />
             <Route path="/settings" element={<SettingsPage />} />
             <Route path="/hr/departments" element={<DepartmentsPage />} />
             <Route path="/hr/employees" element={<EmployeesPage />} />

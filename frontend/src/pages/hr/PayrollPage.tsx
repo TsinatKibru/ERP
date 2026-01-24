@@ -4,7 +4,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 import keycloak from '../../auth/keycloak';
 
-const { Title } = Typography;
+const { Title, Text } = Typography;
 
 interface PayrollRecord {
     id: string;
@@ -17,16 +17,34 @@ interface PayrollRecord {
     status: 'draft' | 'paid' | 'cancelled';
 }
 
+const generatePeriods = () => {
+    const periods = [];
+    const now = new Date();
+
+    // Generate rolling window: 12 months back and 12 months forward
+    for (let i = -12; i <= 12; i++) {
+        const d = new Date(now.getFullYear(), now.getMonth() + i, 1);
+        periods.push(d.toISOString().slice(0, 7));
+    }
+
+    return Array.from(new Set(periods)).sort((a, b) => b.localeCompare(a));
+};
+
 const PayrollPage: React.FC = () => {
     const queryClient = useQueryClient();
     const [isModalOpen, setIsModalOpen] = React.useState(false);
+    const [isBulkModalOpen, setIsBulkModalOpen] = React.useState(false);
     const [form] = Form.useForm();
+    const [bulkForm] = Form.useForm();
     const [editingRecord, setEditingRecord] = React.useState<PayrollRecord | null>(null);
+    const periods = generatePeriods();
+    const currentMonth = new Date().toISOString().slice(0, 7);
+    const [selectedPeriod, setSelectedPeriod] = React.useState<string>(currentMonth);
 
     const { data: payrollRecords, isLoading } = useQuery<PayrollRecord[]>({
-        queryKey: ['payroll'],
+        queryKey: ['payroll', selectedPeriod],
         queryFn: async () => {
-            const { data } = await axios.get('http://localhost:3000/hr/payroll', {
+            const { data } = await axios.get(`http://localhost:3000/hr/payroll?period=${selectedPeriod}`, {
                 headers: { Authorization: `Bearer ${keycloak.token}` },
             });
             return data;
@@ -94,6 +112,7 @@ const PayrollPage: React.FC = () => {
         },
         onSuccess: (res: any) => {
             queryClient.invalidateQueries({ queryKey: ['payroll'] });
+            setIsBulkModalOpen(false);
             message.success(`Generated payroll for ${res.count} employees`);
         },
     });
@@ -163,24 +182,30 @@ const PayrollPage: React.FC = () => {
         },
     ];
 
-    const currentPeriod = new Date().toISOString().slice(0, 7); // e.g. "2026-01"
-
     return (
         <div>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16 }}>
                 <Title level={2}>Payroll Management</Title>
                 <Space>
+                    <Select
+                        value={selectedPeriod}
+                        onChange={setSelectedPeriod}
+                        style={{ width: 140 }}
+                        placeholder="Filter Period"
+                    >
+                        {periods.map(p => <Select.Option key={p} value={p}>{p}</Select.Option>)}
+                    </Select>
                     <Button
                         loading={bulkMutation.isPending}
-                        onClick={() => bulkMutation.mutate(currentPeriod)}
+                        onClick={() => setIsBulkModalOpen(true)}
                     >
-                        Bulk Generate ({currentPeriod})
+                        Bulk Generate
                     </Button>
                     <Button type="primary" onClick={() => {
                         setEditingRecord(null);
                         form.resetFields();
                         setIsModalOpen(true);
-                    }}>Generate Payroll</Button>
+                    }}>Generate Individual</Button>
                 </Space>
             </div>
 
@@ -189,13 +214,13 @@ const PayrollPage: React.FC = () => {
             </Card>
 
             <Modal
-                title={editingRecord ? 'Edit Payroll Record' : 'Generate Payroll Record'}
+                title={editingRecord ? 'Edit Payroll Record' : 'Generate Individual Payroll'}
                 open={isModalOpen}
                 onCancel={() => setIsModalOpen(false)}
                 onOk={() => form.submit()}
                 confirmLoading={generateMutation.isPending || updateMutation.isPending}
             >
-                <Form form={form} layout="vertical" onFinish={(v) => editingRecord ? updateMutation.mutate(v) : generateMutation.mutate(v)} initialValues={{ period: currentPeriod }}>
+                <Form form={form} layout="vertical" onFinish={(v) => editingRecord ? updateMutation.mutate(v) : generateMutation.mutate(v)} initialValues={{ period: selectedPeriod }}>
                     {!editingRecord && (
                         <>
                             <Form.Item name="employeeId" label="Employee" rules={[{ required: true }]}>
@@ -207,8 +232,7 @@ const PayrollPage: React.FC = () => {
                             </Form.Item>
                             <Form.Item name="period" label="Period (YYYY-MM)" rules={[{ required: true }]}>
                                 <Select>
-                                    <Select.Option value={currentPeriod}>{currentPeriod}</Select.Option>
-                                    <Select.Option value="2025-12">2025-12</Select.Option>
+                                    {periods.map(p => <Select.Option key={p} value={p}>{p}</Select.Option>)}
                                 </Select>
                             </Form.Item>
                         </>
@@ -221,6 +245,26 @@ const PayrollPage: React.FC = () => {
                             <InputNumber style={{ width: '100%' }} prefix="$" />
                         </Form.Item>
                     </div>
+                </Form>
+            </Modal>
+
+            <Modal
+                title="Bulk Generate Payroll"
+                open={isBulkModalOpen}
+                onCancel={() => setIsBulkModalOpen(false)}
+                onOk={() => bulkForm.submit()}
+                confirmLoading={bulkMutation.isPending}
+            >
+                <Form form={bulkForm} layout="vertical" onFinish={(v) => bulkMutation.mutate(v.period)} initialValues={{ period: selectedPeriod }}>
+                    <Text type="secondary" style={{ display: 'block', marginBottom: 16 }}>
+                        This will generate draft payroll records for all active employees for the selected period.
+                        Existing records for the period will be refreshed.
+                    </Text>
+                    <Form.Item name="period" label="Target Period" rules={[{ required: true }]}>
+                        <Select>
+                            {periods.map(p => <Select.Option key={p} value={p}>{p}</Select.Option>)}
+                        </Select>
+                    </Form.Item>
                 </Form>
             </Modal>
         </div>
