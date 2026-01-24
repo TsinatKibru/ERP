@@ -26,7 +26,7 @@ export class PurchaseOrdersService {
     async findOne(id: string): Promise<PurchaseOrder> {
         const po = await this.poRepository.findOne({
             where: { id },
-            relations: ['supplier', 'items'],
+            relations: ['supplier', 'items', 'items.product'],
         });
         if (!po) throw new NotFoundException(`Purchase Order with ID ${id} not found`);
         return po;
