@@ -7,9 +7,13 @@ import { PaymentsService } from './payments/payments.service';
 import { InvoicesController } from './invoices/invoices.controller';
 import { PaymentsController } from './payments/payments.controller';
 import { PurchaseOrder } from '../procurement/purchase-orders/entities/purchase-order.entity';
+import { ReportingModule } from '../reporting/reporting.module';
 
 @Module({
-    imports: [TypeOrmModule.forFeature([Invoice, Payment, PurchaseOrder])],
+    imports: [
+        TypeOrmModule.forFeature([Invoice, Payment, PurchaseOrder]),
+        ReportingModule,
+    ],
     providers: [InvoicesService, PaymentsService],
     controllers: [InvoicesController, PaymentsController],
     exports: [InvoicesService, PaymentsService],

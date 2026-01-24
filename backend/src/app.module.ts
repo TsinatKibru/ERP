@@ -19,6 +19,7 @@ import { DashboardModule } from './dashboard/dashboard.module';
 import { SuppliersModule } from './procurement/suppliers/suppliers.module';
 import { PurchaseOrdersModule } from './procurement/purchase-orders/purchase-orders.module';
 import { FinanceModule } from './finance/finance.module';
+import { ReportingModule } from './reporting/reporting.module';
 
 @Module({
   imports: [
@@ -79,6 +80,7 @@ import { FinanceModule } from './finance/finance.module';
     SuppliersModule,
     PurchaseOrdersModule,
     FinanceModule,
+    ReportingModule,
   ],
   controllers: [AppController, HealthController, ProfileController],
   providers: [AppService],

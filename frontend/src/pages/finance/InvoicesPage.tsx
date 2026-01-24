@@ -1,5 +1,6 @@
 import React from 'react';
 import { Table, Typography, Card, Tag, Button, Space, message, Modal, Form, InputNumber, Select, Input } from 'antd';
+import { FilePdfOutlined } from '@ant-design/icons';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 import keycloak from '../../auth/keycloak';
@@ -76,6 +77,14 @@ const InvoicesPage: React.FC = () => {
             key: 'action',
             render: (_: any, record: Invoice) => (
                 <Space>
+                    <Button
+                        icon={<FilePdfOutlined />}
+                        onClick={() => {
+                            window.open(`http://localhost:3000/invoices/${record.id}/pdf`, '_blank');
+                        }}
+                    >
+                        PDF
+                    </Button>
                     {record.status === 'unpaid' && (
                         <Button
                             type="link"
