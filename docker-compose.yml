@@ -1,0 +1,54 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:13-alpine
+    container_name: erp-postgres
+    ports:
+      - "5436:5432"
+    environment:
+      POSTGRES_USER: erp_user
+      POSTGRES_PASSWORD: erp_password
+      POSTGRES_DB: erp_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7-alpine
+    container_name: erp-redis
+    ports:
+      - "6379:6379"
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: erp-rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:23.0.0
+    container_name: erp-keycloak
+    ports:
+      - "8080:8080"
+    environment:
+      KC_HOSTNAME: localhost
+      KC_HOSTNAME_STRICT: "false"
+      KC_HTTP_ENABLED: "true"
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://postgres:5432/erp_db
+      KC_DB_USERNAME: erp_user
+      KC_DB_PASSWORD: erp_password
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+    volumes:
+      - ./keycloak-realm.json:/opt/keycloak/data/import/realm.json
+    command: start-dev --import-realm
+    depends_on:
+      - postgres
+
+volumes:
+  postgres_data:
