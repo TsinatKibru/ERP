@@ -25,7 +25,9 @@ export class UsersService {
     }
 
     async findOrCreateFromToken(tokenData: any): Promise<User> {
-        const { sub: keycloakId, email, given_name: firstName, family_name: lastName } = tokenData;
+        const { sub: keycloakId, email, given_name: firstName, family_name: lastName, realm_access } = tokenData;
+        const roles = realm_access?.roles || [];
+        const bestRole = roles.includes('admin') ? 'admin' : 'user';
 
         let user = await this.findByKeycloakId(keycloakId);
 
@@ -35,8 +37,14 @@ export class UsersService {
                 email,
                 firstName,
                 lastName,
-                role: 'user', // Default role
+                role: bestRole,
             });
+            return this.usersRepository.save(user);
+        }
+
+        // Update role if changed in Keycloak
+        if (user.role !== bestRole) {
+            user.role = bestRole;
             return this.usersRepository.save(user);
         }
 

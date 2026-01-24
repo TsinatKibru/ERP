@@ -1,6 +1,6 @@
-import { Controller, Get, Patch, Param, Body } from '@nestjs/common';
+import { Controller, Get, Patch, Param, Body, Req } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { Roles } from 'nest-keycloak-connect';
+import { Roles, Public, AuthenticatedUser, RoleMatchingMode } from 'nest-keycloak-connect';
 import { User } from './entities/user.entity';
 
 @Controller('users')

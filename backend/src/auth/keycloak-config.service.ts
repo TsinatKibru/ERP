@@ -12,7 +12,7 @@ export class KeycloakConfigService implements KeycloakConnectOptionsFactory {
     constructor(private configService: ConfigService) { }
 
     createKeycloakConnectOptions(): KeycloakConnectOptions {
-        return {
+        const options = {
             authServerUrl: this.configService.get<string>('KEYCLOAK_AUTH_SERVER_URL', 'http://localhost:8080'),
             realm: this.configService.get<string>('KEYCLOAK_REALM', 'erp-realm'),
             clientId: this.configService.get<string>('KEYCLOAK_CLIENT_ID', 'erp-backend'),
@@ -20,5 +20,6 @@ export class KeycloakConfigService implements KeycloakConnectOptionsFactory {
             policyEnforcement: PolicyEnforcementMode.PERMISSIVE,
             tokenValidation: TokenValidation.ONLINE,
         };
+        return options;
     }
 }

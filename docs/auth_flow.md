@@ -75,7 +75,12 @@ export default keycloak;
 The initialization is automated via `keycloak-realm.json`, which sets up:
 - **Realm**: `erp-realm`
 - **Clients**: `erp-backend` (Confidential), `erp-frontend` (Public)
-- **Roles**: `admin`, `user`
+- **Roles**:
+  - **Realm Roles**: `admin`, `user`
+  - **Client Roles**: `admin`, `user` (Added to both clients for robust mapping)
+
+> [!NOTE]
+> The backend `RoleGuard` is configured to check for the `admin` role. For maximum compatibility, we assign both Realm and Client-level roles to administrative users.
 
 ## Accessing the Admin UI
 The Keycloak management console is available at `http://localhost:8080` with credentials:
