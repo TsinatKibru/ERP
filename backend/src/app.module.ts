@@ -12,6 +12,12 @@ import { redisStore } from 'cache-manager-ioredis-yet';
 import { UsersModule } from './users/users.module';
 import { CategoriesModule } from './inventory/categories/categories.module';
 import { ProductsModule } from './inventory/products/products.module';
+import { CustomersModule } from './sales/customers/customers.module';
+import { OrdersModule } from './sales/orders/orders.module';
+import { SeedsModule } from './seeds/seeds.module';
+import { DashboardModule } from './dashboard/dashboard.module';
+import { SuppliersModule } from './procurement/suppliers/suppliers.module';
+import { PurchaseOrdersModule } from './procurement/purchase-orders/purchase-orders.module';
 
 @Module({
   imports: [
@@ -65,6 +71,12 @@ import { ProductsModule } from './inventory/products/products.module';
     UsersModule,
     CategoriesModule,
     ProductsModule,
+    CustomersModule,
+    OrdersModule,
+    SeedsModule,
+    DashboardModule,
+    SuppliersModule,
+    PurchaseOrdersModule,
   ],
   controllers: [AppController, HealthController, ProfileController],
   providers: [AppService],

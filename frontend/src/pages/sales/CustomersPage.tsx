@@ -6,22 +6,24 @@ import keycloak from '../../auth/keycloak';
 
 const { Title } = Typography;
 
-interface Category {
+interface Customer {
     id: string;
     name: string;
-    description: string;
+    email: string;
+    phone: string;
+    address: string;
     createdAt: string;
 }
 
-const CategoriesPage: React.FC = () => {
+const CustomersPage: React.FC = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [form] = Form.useForm();
     const queryClient = useQueryClient();
 
-    const { data: categories, isLoading } = useQuery<Category[]>({
-        queryKey: ['categories'],
+    const { data: customers, isLoading } = useQuery<Customer[]>({
+        queryKey: ['customers'],
         queryFn: async () => {
-            const { data } = await axios.get('http://localhost:3000/categories', {
+            const { data } = await axios.get('http://localhost:3000/customers', {
                 headers: { Authorization: `Bearer ${keycloak.token}` },
             });
             return data;
@@ -29,66 +31,47 @@ const CategoriesPage: React.FC = () => {
     });
 
     const createMutation = useMutation({
-        mutationFn: async (values: Partial<Category>) => {
-            await axios.post('http://localhost:3000/categories', values, {
+        mutationFn: async (values: Partial<Customer>) => {
+            await axios.post('http://localhost:3000/customers', values, {
                 headers: { Authorization: `Bearer ${keycloak.token}` },
             });
         },
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['categories'] });
-            message.success('Category created');
+            queryClient.invalidateQueries({ queryKey: ['customers'] });
+            message.success('Customer added');
             setIsModalOpen(false);
             form.resetFields();
         },
     });
 
-    const deleteMutation = useMutation({
-        mutationFn: async (id: string) => {
-            await axios.delete(`http://localhost:3000/categories/${id}`, {
-                headers: { Authorization: `Bearer ${keycloak.token}` },
-            });
-        },
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['categories'] });
-            message.success('Category deleted');
-        },
-    });
-
     const columns = [
         { title: 'Name', dataIndex: 'name', key: 'name' },
-        { title: 'Description', dataIndex: 'description', key: 'description' },
+        { title: 'Email', dataIndex: 'email', key: 'email' },
+        { title: 'Phone', dataIndex: 'phone', key: 'phone' },
+        { title: 'Address', dataIndex: 'address', key: 'address' },
         {
-            title: 'Created At',
+            title: 'Member Since',
             dataIndex: 'createdAt',
             key: 'createdAt',
             render: (date: string) => new Date(date).toLocaleDateString(),
-        },
-        {
-            title: 'Action',
-            key: 'action',
-            render: (_: any, record: Category) => (
-                <Button danger type="link" onClick={() => deleteMutation.mutate(record.id)}>
-                    Delete
-                </Button>
-            ),
         },
     ];
 
     return (
         <div>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16 }}>
-                <Title level={2}>Categories</Title>
+                <Title level={2}>Customer Management</Title>
                 <Button type="primary" onClick={() => setIsModalOpen(true)}>
-                    Add Category
+                    Add Customer
                 </Button>
             </div>
 
             <Card>
-                <Table dataSource={categories} columns={columns} loading={isLoading} rowKey="id" />
+                <Table dataSource={customers} columns={columns} loading={isLoading} rowKey="id" />
             </Card>
 
             <Modal
-                title="Create Category"
+                title="Add Customer"
                 open={isModalOpen}
                 onCancel={() => setIsModalOpen(false)}
                 onOk={() => form.submit()}
@@ -98,7 +81,13 @@ const CategoriesPage: React.FC = () => {
                     <Form.Item name="name" label="Name" rules={[{ required: true }]}>
                         <Input />
                     </Form.Item>
-                    <Form.Item name="description" label="Description">
+                    <Form.Item name="email" label="Email" rules={[{ required: true, type: 'email' }]}>
+                        <Input />
+                    </Form.Item>
+                    <Form.Item name="phone" label="Phone">
+                        <Input />
+                    </Form.Item>
+                    <Form.Item name="address" label="Address">
                         <Input.TextArea />
                     </Form.Item>
                 </Form>
@@ -107,4 +96,4 @@ const CategoriesPage: React.FC = () => {
     );
 };
 
-export default CategoriesPage;
+export default CustomersPage;

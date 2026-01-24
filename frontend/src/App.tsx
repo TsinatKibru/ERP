@@ -6,15 +6,24 @@ import {
   DashboardOutlined,
   SettingOutlined,
   ShopOutlined,
+  ContactsOutlined,
+  TransactionOutlined,
 } from '@ant-design/icons';
 import { Layout, Menu, Button, theme, Spin } from 'antd';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import axios from 'axios';
-import keycloak from './auth/keycloak';
+import ProductsPage from './pages/inventory/ProductsPage';
+import CustomersPage from './pages/sales/CustomersPage';
+import OrdersPage from './pages/sales/OrdersPage';
+import CreateOrderPage from './pages/sales/CreateOrderPage';
 import UsersPage from './pages/UsersPage';
 import CategoriesPage from './pages/inventory/CategoriesPage';
-import ProductsPage from './pages/inventory/ProductsPage';
+import DashboardPage from './pages/DashboardPage';
+import SuppliersPage from './pages/procurement/SuppliersPage';
+import PurchaseOrdersPage from './pages/procurement/PurchaseOrdersPage';
+import CreatePurchaseOrderPage from './pages/procurement/CreatePurchaseOrderPage';
+import keycloak from './auth/keycloak';
 
 // Remove default Vite styles that conflict with Ant Design
 import './index.css';
@@ -121,6 +130,36 @@ const App: React.FC = () => {
                 },
                 {
                   key: '4',
+                  icon: <TransactionOutlined />,
+                  label: 'Sales',
+                  children: [
+                    {
+                      key: '4-1',
+                      label: <Link to="/customers">Customers</Link>,
+                    },
+                    {
+                      key: '4-2',
+                      label: <Link to="/orders">Orders</Link>,
+                    },
+                  ],
+                },
+                {
+                  key: '5',
+                  icon: <ContactsOutlined />,
+                  label: 'Procurement',
+                  children: [
+                    {
+                      key: '5-1',
+                      label: <Link to="/suppliers">Suppliers</Link>,
+                    },
+                    {
+                      key: '5-2',
+                      label: <Link to="/purchase-orders">Purchase Orders</Link>,
+                    },
+                  ],
+                },
+                {
+                  key: '6',
                   icon: <SettingOutlined />,
                   label: <Link to="/settings">Settings</Link>,
                 },
@@ -150,10 +189,16 @@ const App: React.FC = () => {
               }}
             >
               <Routes>
-                <Route path="/" element={<h1>Welcome to ERP Dashboard</h1>} />
+                <Route path="/" element={<DashboardPage />} />
                 <Route path="/users" element={<UsersPage />} />
                 <Route path="/categories" element={<CategoriesPage />} />
                 <Route path="/products" element={<ProductsPage />} />
+                <Route path="/customers" element={<CustomersPage />} />
+                <Route path="/orders" element={<OrdersPage />} />
+                <Route path="/orders/new" element={<CreateOrderPage />} />
+                <Route path="/suppliers" element={<SuppliersPage />} />
+                <Route path="/purchase-orders" element={<PurchaseOrdersPage />} />
+                <Route path="/purchase-orders/new" element={<CreatePurchaseOrderPage />} />
                 <Route path="/settings" element={<h1>System Settings</h1>} />
               </Routes>
             </Content>
