@@ -5,6 +5,7 @@ import {
   UserOutlined,
   DashboardOutlined,
   SettingOutlined,
+  ShopOutlined,
 } from '@ant-design/icons';
 import { Layout, Menu, Button, theme, Spin } from 'antd';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
@@ -12,6 +13,8 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import axios from 'axios';
 import keycloak from './auth/keycloak';
 import UsersPage from './pages/UsersPage';
+import CategoriesPage from './pages/inventory/CategoriesPage';
+import ProductsPage from './pages/inventory/ProductsPage';
 
 // Remove default Vite styles that conflict with Ant Design
 import './index.css';
@@ -103,6 +106,21 @@ const App: React.FC = () => {
                 },
                 {
                   key: '3',
+                  icon: <ShopOutlined />,
+                  label: 'Inventory',
+                  children: [
+                    {
+                      key: '3-1',
+                      label: <Link to="/categories">Categories</Link>,
+                    },
+                    {
+                      key: '3-2',
+                      label: <Link to="/products">Products</Link>,
+                    },
+                  ],
+                },
+                {
+                  key: '4',
                   icon: <SettingOutlined />,
                   label: <Link to="/settings">Settings</Link>,
                 },
@@ -134,6 +152,8 @@ const App: React.FC = () => {
               <Routes>
                 <Route path="/" element={<h1>Welcome to ERP Dashboard</h1>} />
                 <Route path="/users" element={<UsersPage />} />
+                <Route path="/categories" element={<CategoriesPage />} />
+                <Route path="/products" element={<ProductsPage />} />
                 <Route path="/settings" element={<h1>System Settings</h1>} />
               </Routes>
             </Content>

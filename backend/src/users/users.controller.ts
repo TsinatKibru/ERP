@@ -8,7 +8,7 @@ export class UsersController {
     constructor(private readonly usersService: UsersService) { }
 
     @Get()
-    @Roles({ roles: ['admin'] })
+    @Roles({ roles: ['realm:admin'] })
     async findAll(): Promise<User[]> {
         return this.usersService.findAll();
     }

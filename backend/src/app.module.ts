@@ -10,6 +10,8 @@ import { ProfileController } from './profile.controller';
 import { AuthModule } from './auth/auth.module';
 import { redisStore } from 'cache-manager-ioredis-yet';
 import { UsersModule } from './users/users.module';
+import { CategoriesModule } from './inventory/categories/categories.module';
+import { ProductsModule } from './inventory/products/products.module';
 
 @Module({
   imports: [
@@ -61,6 +63,8 @@ import { UsersModule } from './users/users.module';
       },
     ]),
     UsersModule,
+    CategoriesModule,
+    ProductsModule,
   ],
   controllers: [AppController, HealthController, ProfileController],
   providers: [AppService],
