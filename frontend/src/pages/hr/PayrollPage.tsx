@@ -12,6 +12,8 @@ interface PayrollRecord {
     period: string;
     baseSalary: number;
     bonuses: number;
+    absentDays: number;
+    attendanceDeduction: number;
     deductions: number;
     netSalary: number;
     status: 'draft' | 'paid' | 'cancelled';
@@ -133,7 +135,17 @@ const PayrollPage: React.FC = () => {
             render: (val: number) => `$${Number(val).toLocaleString()}`,
         },
         {
-            title: 'Deductions',
+            title: 'Attendance (Absent)',
+            key: 'attendance',
+            render: (_: any, record: PayrollRecord) => (
+                <Space direction="vertical" size={0}>
+                    <Text type="secondary" style={{ fontSize: 12 }}>{record.absentDays} days</Text>
+                    <Text type="danger" style={{ fontSize: 11 }}>-${Number(record.attendanceDeduction).toLocaleString()}</Text>
+                </Space>
+            )
+        },
+        {
+            title: 'Other Deductions',
             dataIndex: 'deductions',
             key: 'deductions',
             render: (val: number) => `$${Number(val).toLocaleString()}`,
@@ -142,7 +154,7 @@ const PayrollPage: React.FC = () => {
             title: 'Net Salary',
             dataIndex: 'netSalary',
             key: 'netSalary',
-            render: (val: number) => <strong>${Number(val).toLocaleString(undefined, { minimumFractionDigits: 2 })}</strong>,
+            render: (val: number) => <Tag color="gold" style={{ fontWeight: 'bold', fontSize: 14 }}>${Number(val).toLocaleString(undefined, { minimumFractionDigits: 2 })}</Tag>,
         },
         {
             title: 'Status',

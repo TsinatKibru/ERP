@@ -27,6 +27,12 @@ export class Payroll {
     @Column({ type: 'decimal', precision: 12, scale: 2, default: 0 })
     deductions: number;
 
+    @Column({ type: 'int', default: 0 })
+    absentDays: number;
+
+    @Column({ type: 'decimal', precision: 12, scale: 2, default: 0 })
+    attendanceDeduction: number;
+
     @Column({ type: 'decimal', precision: 12, scale: 2 })
     netSalary: number;
 

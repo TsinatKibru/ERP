@@ -1,8 +1,9 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, Between } from 'typeorm';
 import { Payroll, PayrollStatus } from '../entities/payroll.entity';
 import { Employee } from '../entities/employee.entity';
+import { Attendance } from '../entities/attendance.entity';
 
 @Injectable()
 export class PayrollService {
@@ -11,6 +12,8 @@ export class PayrollService {
         private payrollRepository: Repository<Payroll>,
         @InjectRepository(Employee)
         private employeesRepository: Repository<Employee>,
+        @InjectRepository(Attendance)
+        private attendanceRepository: Repository<Attendance>,
     ) { }
 
     async findAll(period?: string): Promise<Payroll[]> {
@@ -29,6 +32,23 @@ export class PayrollService {
         const employee = await this.employeesRepository.findOne({ where: { id: data.employeeId } });
         if (!employee) throw new NotFoundException('Employee not found');
 
+        // Calculate period start and end
+        const [year, month] = data.period.split('-').map(Number);
+        const startDate = new Date(year, month - 1, 1);
+        const endDate = new Date(year, month, 0);
+
+        // Fetch attendance for the period
+        const attendances = await this.attendanceRepository.find({
+            where: {
+                employee: { id: data.employeeId },
+                date: Between(startDate, endDate)
+            }
+        });
+
+        const absentDays = attendances.filter(a => a.status === 'absent').length;
+        const dailyRate = (Number(employee.salary) / 12) / 22; // Assuming 22 working days per month
+        const attendanceDeduction = absentDays * dailyRate;
+
         let payroll = await this.payrollRepository.findOne({
             where: {
                 employee: { id: data.employeeId },
@@ -45,7 +65,9 @@ export class PayrollService {
         payroll.baseSalary = Number(employee.salary) / 12;
         payroll.bonuses = data.bonuses || 0;
         payroll.deductions = data.deductions || 0;
-        payroll.netSalary = payroll.baseSalary + payroll.bonuses - payroll.deductions;
+        payroll.absentDays = absentDays;
+        payroll.attendanceDeduction = attendanceDeduction;
+        payroll.netSalary = payroll.baseSalary + payroll.bonuses - (payroll.deductions + payroll.attendanceDeduction);
         payroll.status = PayrollStatus.DRAFT;
 
         return this.payrollRepository.save(payroll);
@@ -59,7 +81,7 @@ export class PayrollService {
         if (data.deductions !== undefined) payroll.deductions = data.deductions;
         if (data.status !== undefined) payroll.status = data.status;
 
-        payroll.netSalary = Number(payroll.baseSalary) + Number(payroll.bonuses) - Number(payroll.deductions);
+        payroll.netSalary = Number(payroll.baseSalary) + Number(payroll.bonuses) - (Number(payroll.deductions) + Number(payroll.attendanceDeduction));
 
         return this.payrollRepository.save(payroll);
     }
