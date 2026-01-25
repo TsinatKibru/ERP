@@ -14,6 +14,14 @@ export class PayrollController {
         private readonly usersService: UsersService,
     ) { }
 
+    @Get('me')
+    @Roles({ roles: ['realm:admin', 'realm:manager', 'realm:employee'] })
+    async findMyPayroll(@AuthenticatedUser() userToken: any, @Query('period') period?: string): Promise<Payroll[]> {
+        const user = await this.usersService.findOrCreateFromToken(userToken);
+        if (!user.employee) return [];
+        return this.payrollService.findAllForEmployee(user.employee.id, period);
+    }
+
     @Get()
     @Roles({ roles: ['realm:admin', 'realm:manager', 'realm:employee'] })
     async findAll(@AuthenticatedUser() userToken: any, @Query('period') period?: string): Promise<Payroll[]> {

@@ -23,7 +23,7 @@ const EmployeeDashboard: React.FC = () => {
     const { data: payslips, isLoading: payslipsLoading } = useQuery<any[]>({
         queryKey: ['my-payroll'],
         queryFn: async () => {
-            const { data } = await axios.get(`http://localhost:3000/hr/payroll`, {
+            const { data } = await axios.get(`http://localhost:3000/hr/payroll/me`, {
                 headers: { Authorization: `Bearer ${keycloak.token}` },
             });
             return data;
@@ -34,7 +34,7 @@ const EmployeeDashboard: React.FC = () => {
     const { data: attendance, isLoading: attendanceLoading } = useQuery<any[]>({
         queryKey: ['my-attendance'],
         queryFn: async () => {
-            const { data } = await axios.get(`http://localhost:3000/hr/attendance`, {
+            const { data } = await axios.get(`http://localhost:3000/hr/attendance/me`, {
                 headers: { Authorization: `Bearer ${keycloak.token}` },
             });
             return data;

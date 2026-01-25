@@ -314,6 +314,11 @@ const App: React.FC = () => {
                     ),
                     disabled: true,
                   },
+                  {
+                    key: 'profile-link',
+                    icon: <UserOutlined />,
+                    label: <Link to="/my-service">My Profile</Link>,
+                  },
                   { type: 'divider' },
                   {
                     key: 'logout',
