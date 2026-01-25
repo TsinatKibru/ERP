@@ -36,8 +36,8 @@ Unlike legacy ERPs, this solution is built on a modern stack (**NestJS + React**
 ### Installation
 1.  **Clone the repository**
     ```bash
-    git clone https://github.com/yourusername/erp-system.git
-    cd erp-system
+    git clone https://github.com/TsinatKibru/ERP.git
+    cd ERP
     ```
 
 2.  **Start Infrastructure**
@@ -82,15 +82,15 @@ For detailed architectural guides, please see the `docs/` directory:
 
 ## 🆘 Support
 If you encounter issues or have questions:
-- **Issues:** Please check the [Issues](https://github.com/yourusername/erp-system/issues) page to see if your problem has already been reported.
-- **Discussions:** specific questions can be asked in the [Discussions](https://github.com/yourusername/erp-system/discussions) tab.
+- **Issues:** Please check the [Issues](https://github.com/TsinatKibru/ERP/issues) page to see if your problem has already been reported.
+- **Discussions:** specific questions can be asked in the [Discussions](https://github.com/TsinatKibru/ERP/discussions) tab.
 - **Docs:** Read the specific [docs](docs/) for the module you are having trouble with.
 
 ## 🤝 Contributing
 We welcome contributions! Please read our [Contribution Guidelines](CONTRIBUTING.md) for details on our code of conduct and the process for submitting pull requests.
 
 ## 👤 Maintainers
-- **Calm** - *Initial work* - [Profile](https://github.com/yourusername)
+- **Tsinat Kibru** - *Initial work* - [Profile](https://github.com/TsinatKibru)
 
 ## � License
 This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for details.
