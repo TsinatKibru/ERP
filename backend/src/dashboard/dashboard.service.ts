@@ -5,6 +5,8 @@ import { Order, OrderStatus } from '../sales/orders/entities/order.entity';
 import { Product } from '../inventory/products/entities/product.entity';
 import { Invoice, InvoiceStatus } from '../finance/invoices/entities/invoice.entity';
 import { PurchaseOrder } from '../procurement/purchase-orders/entities/purchase-order.entity';
+import { Expense } from '../finance/expenses/entities/expense.entity';
+import { Payroll } from '../hr/entities/payroll.entity';
 
 export interface TrendMonth {
     month: string;
@@ -24,6 +26,10 @@ export class DashboardService {
         private invoicesRepository: Repository<Invoice>,
         @InjectRepository(PurchaseOrder)
         private poRepository: Repository<PurchaseOrder>,
+        @InjectRepository(Expense)
+        private expenseRepository: Repository<Expense>,
+        @InjectRepository(Payroll)
+        private payrollRepository: Repository<Payroll>,
     ) { }
 
     async getStats() {
@@ -31,10 +37,19 @@ export class DashboardService {
         const products = await this.productsRepository.find({ relations: ['category'] });
         const invoices = await this.invoicesRepository.find();
         const purchaseOrders = await this.poRepository.find();
+        const expenses = await this.expenseRepository.find();
+        const payrolls = await this.payrollRepository.find();
 
         const totalRevenue = orders
             .filter(o => o.status === OrderStatus.COMPLETED)
             .reduce((sum, o) => sum + Number(o.totalAmount), 0);
+
+        const totalExpenses = expenses.reduce((sum, e) => sum + Number(e.amount), 0);
+        const totalPayroll = payrolls
+            .filter(p => p.status === 'paid')
+            .reduce((sum, p) => sum + Number(p.netSalary), 0);
+
+        const netProfit = totalRevenue - (totalExpenses + totalPayroll);
 
         const accountsReceivable = invoices
             .filter(i => i.status === InvoiceStatus.UNPAID)
@@ -64,6 +79,9 @@ export class DashboardService {
 
         return {
             totalRevenue,
+            totalExpenses,
+            totalPayroll,
+            netProfit,
             accountsReceivable,
             accountsPayable,
             ordersCount: {

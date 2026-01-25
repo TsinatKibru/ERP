@@ -16,10 +16,13 @@ The payroll system uses "Periods" to manage current and historical salary disbur
 
 ### Generation Workflow
 1. **Bulk Generate**: Select a target period to automatically create 'Draft' payroll records for all active employees.
-2. **Review/Edit**: Adjust specific bonuses or deductions for individuals in the period.
-3. **Mark Paid**: Finalize the payroll record, shifting the status from `Draft` to `Paid`.
+2. **Attendance Link**: The system automatically counts "Absent" days for the period from the Attendance module and applies a pro-rata deduction based on the base salary.
+3. **Review/Edit**: Adjust specific bonuses or deductions for individuals. Records remain editable even after being marked as paid.
+4. **Bulk Management**: "Mark All as Paid" allows finalizing entire periods with one action.
+5. **PDF Payslips**: Securely generated PDF documents available for individual download.
 
 ## Data Model
 - `Employee`: Personal data + relation to `Department`.
 - `Department`: Grouping for employees.
-- `Payroll`: Snapshot of base salary, bonuses, deductions, and net pay for a specific month.
+- `Payroll`: Snapshot of base salary, bonuses, deductions (attendance and manual), and net pay for a specific month.
+- `Attendance`: Record of daily presence used to calculate payroll absenteeism.

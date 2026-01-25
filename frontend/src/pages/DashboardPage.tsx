@@ -3,7 +3,9 @@ import { Row, Col, Card, Statistic, Typography, Table, Tag, List } from 'antd';
 import {
     DollarCircleOutlined,
     WarningOutlined,
-    ArrowUpOutlined,
+    FallOutlined,
+    RiseOutlined,
+    BankOutlined
 } from '@ant-design/icons';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
@@ -15,6 +17,9 @@ const { Title, Text } = Typography;
 
 interface DashboardStats {
     totalRevenue: number;
+    totalExpenses: number;
+    totalPayroll: number;
+    netProfit: number;
     accountsReceivable: number;
     accountsPayable: number;
     ordersCount: {
@@ -65,8 +70,8 @@ const DashboardPage: React.FC = () => {
                             title="Total Revenue"
                             value={stats?.totalRevenue}
                             precision={2}
-                            styles={{ content: { color: '#3f8600' } }}
-                            prefix={<DollarCircleOutlined />}
+                            valueStyle={{ color: '#3f8600' }}
+                            prefix={<RiseOutlined />}
                             suffix="$"
                         />
                     </Card>
@@ -77,7 +82,7 @@ const DashboardPage: React.FC = () => {
                             title="Accounts Receivable"
                             value={stats?.accountsReceivable}
                             precision={2}
-                            styles={{ content: { color: '#faad14' } }}
+                            valueStyle={{ color: '#faad14' }}
                             prefix={<DollarCircleOutlined />}
                             suffix="$"
                         />
@@ -89,8 +94,8 @@ const DashboardPage: React.FC = () => {
                             title="Accounts Payable"
                             value={stats?.accountsPayable}
                             precision={2}
-                            styles={{ content: { color: '#cf1322' } }}
-                            prefix={<DollarCircleOutlined />}
+                            valueStyle={{ color: '#cf1322' }}
+                            prefix={<FallOutlined />}
                             suffix="$"
                         />
                     </Card>
@@ -101,7 +106,47 @@ const DashboardPage: React.FC = () => {
                             title="Inventory Value"
                             value={stats?.inventoryValue}
                             precision={2}
-                            prefix={<ArrowUpOutlined />}
+                            valueStyle={{ color: '#1890ff' }}
+                            prefix={<BankOutlined />}
+                            suffix="$"
+                        />
+                    </Card>
+                </Col>
+            </Row>
+
+            <Row gutter={[16, 16]} style={{ marginTop: 24 }}>
+                <Col xs={24} sm={12} lg={8}>
+                    <Card variant="borderless" style={{ background: '#f6ffed' }}>
+                        <Statistic
+                            title="Net Profit"
+                            value={stats?.netProfit}
+                            precision={2}
+                            valueStyle={{ color: (stats?.netProfit || 0) >= 0 ? '#3f8600' : '#cf1322', fontWeight: 'bold' }}
+                            prefix={(stats?.netProfit || 0) >= 0 ? <RiseOutlined /> : <FallOutlined />}
+                            suffix="$"
+                        />
+                    </Card>
+                </Col>
+                <Col xs={24} sm={12} lg={8}>
+                    <Card variant="borderless" style={{ background: '#fff1f0' }}>
+                        <Statistic
+                            title="Total Expenditure"
+                            value={stats?.totalExpenses}
+                            precision={2}
+                            valueStyle={{ color: '#cf1322' }}
+                            prefix={<FallOutlined />}
+                            suffix="$"
+                        />
+                    </Card>
+                </Col>
+                <Col xs={24} sm={12} lg={8}>
+                    <Card variant="borderless" style={{ background: '#e6f7ff' }}>
+                        <Statistic
+                            title="Payroll Cost (Paid)"
+                            value={stats?.totalPayroll}
+                            precision={2}
+                            valueStyle={{ color: '#1890ff' }}
+                            prefix={<BankOutlined />}
                             suffix="$"
                         />
                     </Card>

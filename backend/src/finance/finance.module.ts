@@ -8,14 +8,16 @@ import { InvoicesController } from './invoices/invoices.controller';
 import { PaymentsController } from './payments/payments.controller';
 import { PurchaseOrder } from '../procurement/purchase-orders/entities/purchase-order.entity';
 import { ReportingModule } from '../reporting/reporting.module';
+import { ExpensesModule } from './expenses/expenses.module';
 
 @Module({
     imports: [
         TypeOrmModule.forFeature([Invoice, Payment, PurchaseOrder]),
         ReportingModule,
+        ExpensesModule,
     ],
     providers: [InvoicesService, PaymentsService],
     controllers: [InvoicesController, PaymentsController],
-    exports: [InvoicesService, PaymentsService],
+    exports: [InvoicesService, PaymentsService, ExpensesModule],
 })
 export class FinanceModule { }

@@ -90,6 +90,12 @@ export class PayrollService {
         return this.update(id, { status });
     }
 
+    async findOne(id: string): Promise<Payroll> {
+        const payroll = await this.payrollRepository.findOne({ where: { id }, relations: ['employee'] });
+        if (!payroll) throw new NotFoundException('Payroll record not found');
+        return payroll;
+    }
+
     async bulkGenerate(period: string): Promise<{ count: number }> {
         const activeEmployees = await this.employeesRepository.find({ where: { status: 'active' as any } });
         for (const employee of activeEmployees) {
@@ -99,5 +105,14 @@ export class PayrollService {
             });
         }
         return { count: activeEmployees.length };
+    }
+
+    async bulkUpdateStatus(period: string, status: PayrollStatus): Promise<{ count: number }> {
+        const result = await this.payrollRepository.update({ period }, { status });
+
+        // After updating status, we might need to recalculate net salary?
+        // Actually, status update doesn't change net salary.
+
+        return { count: result.affected || 0 };
     }
 }

@@ -1,16 +1,45 @@
-import { Controller, Get, Post, Patch, Body, Param, Query } from '@nestjs/common';
+import { Controller, Get, Post, Patch, Body, Param, Query, Res } from '@nestjs/common';
 import { PayrollService } from './payroll.service';
+import { ReportingService } from '../../reporting/reporting.service';
 import { Roles } from 'nest-keycloak-connect';
 import { Payroll, PayrollStatus } from '../entities/payroll.entity';
+import { Response } from 'express';
 
 @Controller('hr/payroll')
 @Roles({ roles: ['realm:admin'] })
 export class PayrollController {
-    constructor(private readonly payrollService: PayrollService) { }
+    constructor(
+        private readonly payrollService: PayrollService,
+        private readonly reportingService: ReportingService,
+    ) { }
 
     @Get()
     async findAll(@Query('period') period?: string): Promise<Payroll[]> {
         return this.payrollService.findAll(period);
+    }
+
+    @Get(':id')
+    async findOne(@Param('id') id: string): Promise<Payroll> {
+        return this.payrollService.findOne(id);
+    }
+
+    @Get(':id/pdf')
+    async getPdf(@Param('id') id: string, @Res() res: Response) {
+        const payroll = await this.payrollService.findOne(id);
+        const buffer = await this.reportingService.generatePayslipPDF(payroll);
+
+        res.set({
+            'Content-Type': 'application/pdf',
+            'Content-Disposition': `attachment; filename=payslip-${payroll.employee.name.replace(/\s+/g, '_')}-${payroll.period}.pdf`,
+            'Content-Length': buffer.length,
+        });
+
+        res.end(buffer);
+    }
+
+    @Patch('bulk/status')
+    async bulkUpdateStatus(@Body() data: { period: string; status: PayrollStatus }): Promise<{ count: number }> {
+        return this.payrollService.bulkUpdateStatus(data.period, data.status);
     }
 
     @Post()

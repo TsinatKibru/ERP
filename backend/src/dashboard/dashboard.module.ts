@@ -5,10 +5,12 @@ import { DashboardController } from './dashboard.controller';
 import { Order } from '../sales/orders/entities/order.entity';
 import { Product } from '../inventory/products/entities/product.entity';
 import { Invoice } from '../finance/invoices/entities/invoice.entity';
+import { Expense } from '../finance/expenses/entities/expense.entity';
+import { Payroll } from '../hr/entities/payroll.entity';
 import { PurchaseOrder } from '../procurement/purchase-orders/entities/purchase-order.entity';
 
 @Module({
-    imports: [TypeOrmModule.forFeature([Order, Product, Invoice, PurchaseOrder])],
+    imports: [TypeOrmModule.forFeature([Order, Product, Invoice, Expense, Payroll, PurchaseOrder])],
     providers: [DashboardService],
     controllers: [DashboardController],
 })

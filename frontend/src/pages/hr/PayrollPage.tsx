@@ -3,6 +3,7 @@ import { Table, Typography, Card, Button, Form, Select, Tag, message, Modal, Inp
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 import keycloak from '../../auth/keycloak';
+import { FilePdfOutlined } from '@ant-design/icons';
 
 const { Title, Text } = Typography;
 
@@ -39,6 +40,7 @@ const PayrollPage: React.FC = () => {
     const [form] = Form.useForm();
     const [bulkForm] = Form.useForm();
     const [editingRecord, setEditingRecord] = React.useState<PayrollRecord | null>(null);
+    const [downloadingId, setDownloadingId] = React.useState<string | null>(null);
     const periods = generatePeriods();
     const currentMonth = new Date().toISOString().slice(0, 7);
     const [selectedPeriod, setSelectedPeriod] = React.useState<string>(currentMonth);
@@ -119,6 +121,18 @@ const PayrollPage: React.FC = () => {
         },
     });
 
+    const bulkStatusMutation = useMutation({
+        mutationFn: async (data: { period: string; status: string }) => {
+            await axios.patch('http://localhost:3000/hr/payroll/bulk/status', data, {
+                headers: { Authorization: `Bearer ${keycloak.token}` },
+            });
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['payroll'] });
+            message.success('All records in period marked as paid');
+        },
+    });
+
     const columns = [
         { title: 'Period', dataIndex: 'period', key: 'period' },
         { title: 'Employee', dataIndex: ['employee', 'name'], key: 'employee' },
@@ -173,6 +187,34 @@ const PayrollPage: React.FC = () => {
                 <Space>
                     <Button
                         type="link"
+                        icon={<FilePdfOutlined />}
+                        loading={record.id === downloadingId}
+                        onClick={async () => {
+                            setDownloadingId(record.id);
+                            try {
+                                const response = await axios.get(`http://localhost:3000/hr/payroll/${record.id}/pdf`, {
+                                    headers: { Authorization: `Bearer ${keycloak.token}` },
+                                    responseType: 'blob',
+                                });
+                                const url = window.URL.createObjectURL(new Blob([response.data]));
+                                const link = document.createElement('a');
+                                link.href = url;
+                                link.setAttribute('download', `payslip-${record.employee.name.replace(/\s+/g, '_')}-${record.period}.pdf`);
+                                document.body.appendChild(link);
+                                link.click();
+                                link.remove();
+                                window.URL.revokeObjectURL(url);
+                            } catch (err) {
+                                message.error('Failed to download payslip');
+                            } finally {
+                                setDownloadingId(null);
+                            }
+                        }}
+                    >
+                        Payslip
+                    </Button>
+                    <Button
+                        type="link"
                         onClick={() => {
                             setEditingRecord(record);
                             form.setFieldsValue(record);
@@ -212,6 +254,18 @@ const PayrollPage: React.FC = () => {
                         onClick={() => setIsBulkModalOpen(true)}
                     >
                         Bulk Generate
+                    </Button>
+                    <Button
+                        loading={bulkStatusMutation.isPending}
+                        onClick={() => {
+                            Modal.confirm({
+                                title: `Mark all ${selectedPeriod} records as Paid?`,
+                                content: 'This will update all draft records for this period to PAID status.',
+                                onOk: () => bulkStatusMutation.mutate({ period: selectedPeriod, status: 'paid' }),
+                            });
+                        }}
+                    >
+                        Mark All as Paid
                     </Button>
                     <Button type="primary" onClick={() => {
                         setEditingRecord(null);

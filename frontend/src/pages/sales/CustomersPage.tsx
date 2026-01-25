@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Table, Button, Typography, Card, Modal, Form, Input, message } from 'antd';
+import { FilePdfOutlined } from '@ant-design/icons';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 import keycloak from '../../auth/keycloak';
@@ -17,6 +18,7 @@ interface Customer {
 
 const CustomersPage: React.FC = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [downloadingId, setDownloadingId] = useState<string | null>(null);
     const [form] = Form.useForm();
     const queryClient = useQueryClient();
 
@@ -55,6 +57,40 @@ const CustomersPage: React.FC = () => {
             key: 'createdAt',
             render: (date: string) => new Date(date).toLocaleDateString(),
         },
+        {
+            title: 'Actions',
+            key: 'actions',
+            render: (_: any, record: Customer) => (
+                <Button
+                    type="link"
+                    icon={<FilePdfOutlined />}
+                    loading={record.id === downloadingId}
+                    onClick={async () => {
+                        setDownloadingId(record.id);
+                        try {
+                            const response = await axios.get(`http://localhost:3000/customers/${record.id}/statement`, {
+                                headers: { Authorization: `Bearer ${keycloak.token}` },
+                                responseType: 'blob',
+                            });
+                            const url = window.URL.createObjectURL(new Blob([response.data]));
+                            const link = document.createElement('a');
+                            link.href = url;
+                            link.setAttribute('download', `statement-${record.name.replace(/\s+/g, '_')}.pdf`);
+                            document.body.appendChild(link);
+                            link.click();
+                            link.remove();
+                            window.URL.revokeObjectURL(url);
+                        } catch (err) {
+                            message.error('Failed to download statement');
+                        } finally {
+                            setDownloadingId(null);
+                        }
+                    }}
+                >
+                    Statement
+                </Button>
+            )
+        }
     ];
 
     return (

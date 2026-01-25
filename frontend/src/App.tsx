@@ -27,6 +27,7 @@ import SuppliersPage from './pages/procurement/SuppliersPage';
 import PurchaseOrdersPage from './pages/procurement/PurchaseOrdersPage';
 import CreatePurchaseOrderPage from './pages/procurement/CreatePurchaseOrderPage';
 import InvoicesPage from './pages/finance/InvoicesPage';
+import ExpensesPage from './pages/finance/ExpensesPage';
 import SettingsPage from './pages/SettingsPage';
 import AuditLogPage from './pages/AuditLogPage';
 import EmployeesPage from './pages/hr/EmployeesPage';
@@ -35,6 +36,7 @@ import AttendancePage from './pages/hr/AttendancePage';
 import PayrollPage from './pages/hr/PayrollPage';
 import keycloak from './auth/keycloak';
 import GlobalSearch from './components/GlobalSearch';
+import Notifications from './components/Notifications';
 
 // Remove default Vite styles that conflict with Ant Design
 import './index.css';
@@ -199,9 +201,19 @@ const App: React.FC = () => {
               ],
             },
             {
-              key: '/invoices',
+              key: '7',
               icon: <WalletOutlined />,
-              label: <Link to="/invoices">Finance</Link>,
+              label: 'Finance',
+              children: [
+                {
+                  key: '/invoices',
+                  label: <Link to="/invoices">Invoices</Link>,
+                },
+                {
+                  key: '/expenses',
+                  label: <Link to="/expenses">Expenses</Link>,
+                },
+              ],
             },
             {
               key: '8',
@@ -254,6 +266,7 @@ const App: React.FC = () => {
             />
             <GlobalSearch />
           </div>
+          <Notifications />
         </Header>
         <Content
           style={{
@@ -277,6 +290,7 @@ const App: React.FC = () => {
             <Route path="/purchase-orders" element={<PurchaseOrdersPage />} />
             <Route path="/purchase-orders/new" element={<CreatePurchaseOrderPage />} />
             <Route path="/invoices" element={<InvoicesPage />} />
+            <Route path="/expenses" element={<ExpensesPage />} />
             <Route path="/audit" element={<AuditLogPage />} />
             <Route path="/settings" element={<SettingsPage />} />
             <Route path="/hr/departments" element={<DepartmentsPage />} />
