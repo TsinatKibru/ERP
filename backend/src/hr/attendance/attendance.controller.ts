@@ -1,22 +1,35 @@
-import { Controller, Get, Post, Body, Query, Param } from '@nestjs/common';
+import { Controller, Get, Post, Body, Query, Param, ForbiddenException } from '@nestjs/common';
 import { AttendanceService } from './attendance.service';
-import { Roles } from 'nest-keycloak-connect';
+import { Roles, AuthenticatedUser } from 'nest-keycloak-connect';
 import { Attendance, AttendanceStatus } from '../entities/attendance.entity';
+import { UsersService } from '../../users/users.service';
 
 @Controller('hr/attendance')
-@Roles({ roles: ['realm:admin'] })
 export class AttendanceController {
-    constructor(private readonly attendanceService: AttendanceService) { }
+    constructor(
+        private readonly attendanceService: AttendanceService,
+        private readonly usersService: UsersService,
+    ) { }
 
     @Get()
+    @Roles({ roles: ['admin', 'manager', 'employee'] })
     async findAll(
+        @AuthenticatedUser() userToken: any,
         @Query('startDate') startDate?: string,
         @Query('endDate') endDate?: string
     ): Promise<Attendance[]> {
-        return this.attendanceService.findAll(startDate, endDate);
+        const user = await this.usersService.findOrCreateFromToken(userToken);
+        if (user.role === 'admin' || user.role === 'manager') {
+            return this.attendanceService.findAll(startDate, endDate);
+        }
+        if (user.employee) {
+            return this.attendanceService.findByEmployee(user.employee.id, startDate, endDate);
+        }
+        return [];
     }
 
     @Get('employee/:id')
+    @Roles({ roles: ['admin', 'manager'] })
     async findByEmployee(@Param('id') id: string): Promise<Attendance[]> {
         return this.attendanceService.findByEmployee(id);
     }

@@ -25,9 +25,14 @@ export class AttendanceService {
         });
     }
 
-    async findByEmployee(employeeId: string): Promise<Attendance[]> {
+    async findByEmployee(employeeId: string, startDate?: string, endDate?: string): Promise<Attendance[]> {
+        const where: any = { employee: { id: employeeId } };
+        if (startDate && endDate) {
+            where.date = Between(startDate, endDate);
+        }
         return this.attendanceRepository.find({
-            where: { employee: { id: employeeId } },
+            where,
+            relations: ['employee'],
             order: { date: 'DESC' },
         });
     }

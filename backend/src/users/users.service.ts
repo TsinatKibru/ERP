@@ -21,13 +21,16 @@ export class UsersService {
     }
 
     async findByKeycloakId(keycloakId: string): Promise<User | null> {
-        return this.usersRepository.findOne({ where: { keycloakId } });
+        return this.usersRepository.findOne({
+            where: { keycloakId },
+            relations: ['employee']
+        });
     }
 
     async findOrCreateFromToken(tokenData: any): Promise<User> {
         const { sub: keycloakId, email, given_name: firstName, family_name: lastName, realm_access } = tokenData;
         const roles = realm_access?.roles || [];
-        const bestRole = roles.includes('admin') ? 'admin' : 'user';
+        const bestRole = roles.includes('admin') ? 'admin' : (roles.includes('manager') ? 'manager' : 'employee');
 
         let user = await this.findByKeycloakId(keycloakId);
 
@@ -42,13 +45,28 @@ export class UsersService {
             return this.usersRepository.save(user);
         }
 
-        // Update role if changed in Keycloak
-        if (user.role !== bestRole) {
-            user.role = bestRole;
+        // Continuous Sync: Update identity data if changed in Keycloak
+        let hasChanged = false;
+        if (user.email !== email) { user.email = email; hasChanged = true; }
+        if (user.firstName !== firstName) { user.firstName = firstName; hasChanged = true; }
+        if (user.lastName !== lastName) { user.lastName = lastName; hasChanged = true; }
+        if (user.role !== bestRole) { user.role = bestRole; hasChanged = true; }
+
+        if (hasChanged) {
             return this.usersRepository.save(user);
         }
 
         return user;
+    }
+
+    async setEmployee(userId: string, employeeId: string | null): Promise<User> {
+        const user = await this.findOne(userId);
+        if (employeeId) {
+            user.employee = { id: employeeId } as any;
+        } else {
+            user.employee = null as any;
+        }
+        return this.usersRepository.save(user);
     }
 
     async update(id: string, updateData: Partial<User>): Promise<User> {

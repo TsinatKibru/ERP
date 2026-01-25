@@ -27,4 +27,13 @@ export class UsersController {
     ): Promise<User> {
         return this.usersService.update(id, updateData);
     }
+
+    @Patch(':id/employee')
+    @Roles({ roles: ['admin'] })
+    async linkEmployee(
+        @Param('id') id: string,
+        @Body('employeeId') employeeId: string | null,
+    ): Promise<User> {
+        return this.usersService.setEmployee(id, employeeId);
+    }
 }

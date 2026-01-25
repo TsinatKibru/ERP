@@ -28,6 +28,18 @@ export class PayrollService {
         });
     }
 
+    async findAllForEmployee(employeeId: string, period?: string): Promise<Payroll[]> {
+        const where: any = { employee: { id: employeeId } };
+        if (period) {
+            where.period = period;
+        }
+        return this.payrollRepository.find({
+            where,
+            relations: ['employee'],
+            order: { period: 'DESC' },
+        });
+    }
+
     async generate(data: { employeeId: string; period: string; bonuses?: number; deductions?: number; skipAttendanceDeduction?: boolean }): Promise<Payroll> {
         const employee = await this.employeesRepository.findOne({ where: { id: data.employeeId } });
         if (!employee) throw new NotFoundException('Employee not found');

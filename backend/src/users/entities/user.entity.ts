@@ -1,4 +1,5 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToOne, JoinColumn } from 'typeorm';
+import { Employee } from '../../hr/entities/employee.entity';
 
 @Entity('users')
 export class User {
@@ -19,6 +20,10 @@ export class User {
 
     @Column({ nullable: true })
     role: string;
+
+    @OneToOne(() => Employee)
+    @JoinColumn()
+    employee: Employee;
 
     @CreateDateColumn()
     createdAt: Date;
