@@ -27,8 +27,6 @@
     "@nestjs/microservices": "^11.1.12",
     "@nestjs/platform-express": "^11.0.1",
     "@nestjs/typeorm": "^11.0.0",
-    "amqp-connection-manager": "^5.0.0",
-    "amqplib": "^0.10.9",
     "cache-manager": "^7.2.8",
     "cache-manager-ioredis-yet": "^2.1.2",
     "ioredis": "^5.9.2",

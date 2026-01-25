@@ -5,7 +5,6 @@ import { Connection } from 'typeorm';
 import { Cache } from 'cache-manager';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Inject } from '@nestjs/common';
-import { ClientProxy } from '@nestjs/microservices';
 import { Public } from 'nest-keycloak-connect';
 
 @Controller('health')
@@ -13,7 +12,6 @@ export class HealthController {
     constructor(
         @InjectConnection() private connection: Connection,
         @Inject(CACHE_MANAGER) private cacheManager: Cache,
-        @Inject('ERP_INTERNAL_SERVICE') private client: ClientProxy,
     ) { }
 
     @Public()
@@ -30,18 +28,10 @@ export class HealthController {
             redisStatus = 'DOWN';
         }
 
-        let rabbitStatus = 'OK';
-        try {
-            await this.client.connect();
-        } catch (e) {
-            rabbitStatus = 'DOWN';
-        }
-
         return {
             status: 'OK',
             database: dbStatus,
             redis: redisStatus,
-            rabbitmq: rabbitStatus,
         };
     }
 }
