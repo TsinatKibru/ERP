@@ -13,11 +13,13 @@ import { PayrollController } from './payroll/payroll.controller';
 import { DepartmentsService } from './departments/departments.service';
 import { DepartmentsController } from './departments/departments.controller';
 import { ReportingModule } from '../reporting/reporting.module';
+import { UsersModule } from '../users/users.module';
 
 @Module({
     imports: [
         TypeOrmModule.forFeature([Employee, Department, Attendance, Payroll]),
         ReportingModule,
+        UsersModule,
     ],
     providers: [EmployeesService, AttendanceService, PayrollService, DepartmentsService],
     controllers: [EmployeesController, AttendanceController, PayrollController, DepartmentsController],
