@@ -20,6 +20,10 @@ Manage users, roles, and link them to employee profiles.
 |:---:|:---:|
 | ![Users](screenshots/users_management.png) | ![Link](screenshots/user_employee_link.png) |
 
+| **Keycloak User List** | **Keycloak Role Assignment** |
+|:---:|:---:|
+| ![Keycloak Users](screenshots/keycloak_user_list.png) | ![Keycloak Roles](screenshots/keycloak_role_assign.png) |
+
 ## 📦 Inventory Management
 Track stock, adjustments, and movement history.
 
