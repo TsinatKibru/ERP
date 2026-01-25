@@ -1,96 +1,96 @@
 # Enterprise Resource Planning (ERP) System
 
-## 🚀 Overview
-A comprehensive, full-stack ERP solution designed for modern business operations. Built with a scalable **NestJS** backend and a responsive **React (Vite)** frontend, secured by **Keycloak** identity management. This system handles everything from Inventory and Sales to detailed HR Payroll and Financial Auditing.
+![Build Status](https://img.shields.io/badge/build-passing-brightgreen)
+![Version](https://img.shields.io/badge/version-1.0.0-blue)
+![License](https://img.shields.io/badge/license-MIT-green)
+![Frontend](https://img.shields.io/badge/frontend-React%20%7C%20Vite-61DAFB)
+![Backend](https://img.shields.io/badge/backend-NestJS-E0234E)
 
-![Dashboard Preview](https://placehold.co/800x400?text=ERP+Dashboard+Preview)
+## � Table of Contents
+- [What the Project Does](#-what-the-project-does)
+- [Why it is Useful](#-why-it-is-useful)
+- [How to Get Started](#-how-to-get-started)
+- [Documentation](#-documentation)
+- [Support](#-support)
+- [Contributing](#-contributing)
+- [License](#-license)
 
-## 🛠 Tech Stack
-- **Backend:** NestJS, TypeORM, Postgres, Redis
-- **Frontend:** React, TypeScript, Vite, Ant Design, Recharts, TanStack Query
-- **Authentication:** Keycloak (OIDC/OAuth2) with Role-Based Access Control (RBAC)
-- **Infrastructure:** Docker Compose
+## 🎯 What the Project Does
+This project is a modern, full-stack **Enterprise Resource Planning (ERP)** system designed to streamline business operations for SMBs. It consolidates Inventory, Sales, Procurement, HR, and Finance into a single, unified platform secured by **Keycloak** authentication.
 
-## ✨ Key Features
-### 🔐 Advanced Security (RBAC)
-- **Three-Tier Access:**
-  - **Admin:** Full system control, audit logs, and settings.
-  - **Manager:** Operational access (Sales, Inventory, Finance) but no config rights.
-  - **Employee:** Secure "Self-Service" portal for viewing personal payslips and attendance only.
-- **Data Isolation:** Employees can only access their own data via dedicated `/me` endpoints.
+Unlike legacy ERPs, this solution is built on a modern stack (**NestJS + React**) with a focus on real-time data, responsive design, and auditable financial integrity.
 
-### 📦 Operational Modules
-- **Inventory:** Product management, categories, stock adjustments, and full ledger history.
-- **Sales:** Customer CRM, order processing, and invoice generation.
-- **Procurement:** Supplier management and purchase order (PO) workflows.
+## ✨ Why it is Useful
+*   **Unified Data:** No more silos. Sales orders automatically update inventory levels and accounts receivable.
+*   **Role-Based Security:** Strict data isolation ensures Employees see only what they need, while Managers run the business and Admins configure it.
+*   **Financial Integrity:** Real-time Profit & Loss generation (`Revenue - Expenses - Payroll`) gives instant business health visibility.
+*   **Self-Service HR:** Employees can access their own payslips (PDF) and attendance records without bothering HR.
+*   **Audit Ready:** Every critical action is logged, and financial documents (Payslips, Invoices) are generated as immutable PDFs.
 
-### 💰 Finance & HR
-- **Payroll Engine:** Automated monthly payroll generation with **PDF Payslips**, bonus/deduction handling, and attendance integration.
-- **Expenses:** Expense tracking with categorization and reference linking.
-- **Profit & Loss:** Real-time financial dashboard calculating Net Profit (`Revenue - Expenses - Payroll`).
-
-### 📊 Analytics & Utilities
-- **Interactive Dashboards:** Visual trends for Sales, Stock Levels, and Financial Ratios.
-- **Global Search:** Instant cross-module search for products, customers, and orders.
-- **Audit Trail:** Comprehensive logging of all critical system actions.
-
-## 🚦 Getting Started
+## � How to Get Started
 
 ### Prerequisites
-- **Docker & Docker Compose** (Required for Database & Keycloak)
-- **Node.js v18+** (For local development)
+- [Docker Engine](https://docs.docker.com/get-docker/) & Docker Compose
+- [Node.js](https://nodejs.org/) v18+ (for local development)
 
-### Quick Start
-1. **Launch Infrastructure**
-   Start Postgres, Redis, and Keycloak services.
-   ```bash
-   docker-compose up -d
-   ```
+### Installation
+1.  **Clone the repository**
+    ```bash
+    git clone https://github.com/yourusername/erp-system.git
+    cd erp-system
+    ```
 
-2. **Start Backend Server**
-   ```bash
-   cd backend
-   npm install
-   npm run start:dev
-   ```
-   *Server runs on `http://localhost:3000`*
+2.  **Start Infrastructure**
+    Launch the database, cache, and authentication services:
+    ```bash
+    docker-compose up -d
+    ```
 
-3. **Start Frontend Application**
-   ```bash
-   cd frontend
-   npm install
-   npm run dev
-   ```
-   *App runs on `http://localhost:5173`*
+3.  **Start Backend**
+    ```bash
+    cd backend
+    npm install
+    npm run start:dev
+    ```
+    The API will be available at `http://localhost:3000`.
 
-## 🔑 Default Configuration
+4.  **Start Frontend**
+    ```bash
+    cd frontend
+    npm install
+    npm run dev
+    ```
+    Access the application at `http://localhost:5173`.
+
+### Standard Credentials
 | Service | URL | Username | Password |
 |---------|-----|----------|----------|
-| **Keycloak Admin** | `http://localhost:8080` | `admin` | `admin` |
-| **Database** | `localhost:5436` | `erp_user` | `erp_password` |
-| **API Docs** | `http://localhost:3000/api` | - | - |
+| **Keycloak** | `http://localhost:8080` | `admin` | `admin` |
+| **Postgres** | `localhost:5436` | `erp_user` | `erp_password` |
 
-> **Note:** You will need to create your initial users (Admin/Manager/Employee) inside Keycloak after launching.
+*Note: You must create your initial Realm and Users in Keycloak after the first launch.*
 
-## 📂 Project Structure
-```
-ERP/
-├── backend/            # NestJS API Application
-│   ├── src/
-│   │   ├── audit/      # Audit Logging System
-│   │   ├── auth/       # Keycloak Guards & Decorators
-│   │   ├── finance/    # Invoices, Expenses, Payments
-│   │   ├── hr/         # Employees, Payroll, Attendance
-│   │   ├── inventory/  # Products, categories, Ledger
-│   │   └── sales/      # Orders, Customers
-│   └── test/
-├── frontend/           # React + Vite Application
-│   ├── src/
-│   │   ├── components/ # Reusable UI (Sidebar, Notifications)
-│   │   ├── pages/      # Module Pages (Sales, HR, etc.)
-│   │   └── auth/       # Frontend Auth Logic
-└── docker-compose.yml  # Infrastructure Definition
-```
+## � Documentation
+For detailed architectural guides, please see the `docs/` directory:
 
-## 📜 License
-This project is open-source and available under the [MIT License](LICENSE).
+- [**Authentication Flow**](docs/auth_flow.md) - How Keycloak integrates with guards.
+- [**Architecture Overview**](docs/architecture.md) - System design and patterns.
+- [**User Management**](docs/user_management.md) - Roles and Permissions (RBAC).
+- [**Inventory System**](docs/inventory_intelligence.md) - Stock tracking and ledgers.
+- [**Finance Module**](docs/finance.md) - Invoices, expenses, and payments.
+- [**HR & Payroll**](docs/hr_and_payroll.md) - Payslip generation logic.
+
+## 🆘 Support
+If you encounter issues or have questions:
+- **Issues:** Please check the [Issues](https://github.com/yourusername/erp-system/issues) page to see if your problem has already been reported.
+- **Discussions:** specific questions can be asked in the [Discussions](https://github.com/yourusername/erp-system/discussions) tab.
+- **Docs:** Read the specific [docs](docs/) for the module you are having trouble with.
+
+## 🤝 Contributing
+We welcome contributions! Please read our [Contribution Guidelines](CONTRIBUTING.md) for details on our code of conduct and the process for submitting pull requests.
+
+## 👤 Maintainers
+- **Calm** - *Initial work* - [Profile](https://github.com/yourusername)
+
+## � License
+This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for details.
