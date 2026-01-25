@@ -26,13 +26,16 @@ interface Attendance {
 const AttendancePage: React.FC = () => {
     const queryClient = useQueryClient();
     const [selectedRowKeys, setSelectedRowKeys] = React.useState<React.Key[]>([]);
+    const [selectedDate, setSelectedDate] = React.useState<dayjs.Dayjs>(dayjs());
     const [isModalOpen, setIsModalOpen] = React.useState(false);
     const [form] = Form.useForm();
 
+    const formattedDate = selectedDate.format('YYYY-MM-DD');
+
     const { data: attendanceData, isLoading } = useQuery<Attendance[]>({
-        queryKey: ['attendance'],
+        queryKey: ['attendance', formattedDate],
         queryFn: async () => {
-            const { data } = await axios.get('http://localhost:3000/hr/attendance', {
+            const { data } = await axios.get(`http://localhost:3000/hr/attendance?startDate=${formattedDate}&endDate=${formattedDate}`, {
                 headers: { Authorization: `Bearer ${keycloak.token}` },
             });
             return data;
@@ -107,9 +110,8 @@ const AttendancePage: React.FC = () => {
 
     const bulkMutation = useMutation({
         mutationFn: async () => {
-            const today = dayjs().format('YYYY-MM-DD');
             await axios.post('http://localhost:3000/hr/attendance/bulk', {
-                date: today,
+                date: formattedDate,
                 checkIn: '09:00',
                 checkOut: '17:00'
             }, {
@@ -118,7 +120,7 @@ const AttendancePage: React.FC = () => {
         },
         onSuccess: (res: any) => {
             queryClient.invalidateQueries({ queryKey: ['attendance'] });
-            message.success(`Recorded attendance for ${res.data.count} active employees`);
+            message.success(`Recorded attendance for ${res.data.count} active employees on ${formattedDate}`);
         },
     });
 
@@ -139,7 +141,6 @@ const AttendancePage: React.FC = () => {
                     leave: { color: '#1890ff', label: 'LEAVE', icon: <LogoutOutlined /> },
                 };
 
-                // Safety check for null/undefined status
                 const currentStatus = status || 'present';
                 const config = statusConfig[currentStatus] || {
                     color: '#bfbfbf',
@@ -194,6 +195,11 @@ const AttendancePage: React.FC = () => {
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16 }}>
                 <Title level={2}>Attendance Tracking</Title>
                 <Space>
+                    <DatePicker
+                        value={selectedDate}
+                        onChange={(date) => date && setSelectedDate(date)}
+                        allowClear={false}
+                    />
                     {selectedRowKeys.length > 0 && (
                         <Button
                             danger
@@ -207,9 +213,12 @@ const AttendancePage: React.FC = () => {
                         loading={bulkMutation.isPending}
                         onClick={() => bulkMutation.mutate()}
                     >
-                        Bulk Check-in Today
+                        Bulk Check-in ({formattedDate})
                     </Button>
-                    <Button type="primary" onClick={() => setIsModalOpen(true)}>Record Attendance</Button>
+                    <Button type="primary" onClick={() => {
+                        form.setFieldsValue({ date: selectedDate });
+                        setIsModalOpen(true);
+                    }}>Record Attendance</Button>
                 </Space>
             </div>
 
@@ -241,7 +250,7 @@ const AttendancePage: React.FC = () => {
                             ))}
                         </Select>
                     </Form.Item>
-                    <Form.Item name="date" label="Date" rules={[{ required: true }]} initialValue={dayjs()}>
+                    <Form.Item name="date" label="Date" rules={[{ required: true }]}>
                         <DatePicker style={{ width: '100%' }} />
                     </Form.Item>
                     <div style={{ display: 'flex', gap: '10px' }}>
