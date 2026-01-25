@@ -27,7 +27,7 @@ const CreateOrderPage: React.FC = () => {
     const { data: customers } = useQuery<Customer[]>({
         queryKey: ['customers'],
         queryFn: async () => {
-            const { data } = await axios.get('http://localhost:3000/customers', {
+            const { data } = await axios.get('http://localhost:3000/sales/customers', {
                 headers: { Authorization: `Bearer ${keycloak.token}` },
             });
             return data;
@@ -37,7 +37,7 @@ const CreateOrderPage: React.FC = () => {
     const { data: products } = useQuery<Product[]>({
         queryKey: ['products'],
         queryFn: async () => {
-            const { data } = await axios.get('http://localhost:3000/products', {
+            const { data } = await axios.get('http://localhost:3000/inventory/products', {
                 headers: { Authorization: `Bearer ${keycloak.token}` },
             });
             return data;
@@ -50,7 +50,7 @@ const CreateOrderPage: React.FC = () => {
                 customerId: values.customerId,
                 items: items.map(i => ({ productId: i.productId, quantity: i.quantity }))
             };
-            await axios.post('http://localhost:3000/orders', payload, {
+            await axios.post('http://localhost:3000/sales/orders', payload, {
                 headers: { Authorization: `Bearer ${keycloak.token}` },
             });
         },

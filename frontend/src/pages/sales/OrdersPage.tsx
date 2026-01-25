@@ -30,7 +30,7 @@ const OrdersPage: React.FC = () => {
     const { data: orders, isLoading } = useQuery<Order[]>({
         queryKey: ['orders'],
         queryFn: async () => {
-            const { data } = await axios.get('http://localhost:3000/orders', {
+            const { data } = await axios.get('http://localhost:3000/sales/orders', {
                 headers: { Authorization: `Bearer ${keycloak.token}` },
             });
             return data;
@@ -39,7 +39,7 @@ const OrdersPage: React.FC = () => {
 
     const updateStatusMutation = useMutation({
         mutationFn: async ({ id, status }: { id: string; status: string }) => {
-            await axios.patch(`http://localhost:3000/orders/${id}/status`, { status }, {
+            await axios.patch(`http://localhost:3000/sales/orders/${id}/status`, { status }, {
                 headers: { Authorization: `Bearer ${keycloak.token}` },
             });
         },
