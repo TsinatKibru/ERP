@@ -6,7 +6,7 @@ import { Invoice, InvoiceStatus } from './entities/invoice.entity';
 import { Response } from 'express';
 
 @Controller('invoices')
-@Roles({ roles: ['realm:admin'] })
+@Roles({ roles: ['realm:admin', 'realm:manager'] })
 export class InvoicesController {
     constructor(
         private readonly invoicesService: InvoicesService,

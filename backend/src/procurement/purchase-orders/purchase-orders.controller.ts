@@ -6,7 +6,7 @@ import { PurchaseOrder, PurchaseOrderStatus } from './entities/purchase-order.en
 import { Response } from 'express';
 
 @Controller('purchase-orders')
-@Roles({ roles: ['realm:admin'] })
+@Roles({ roles: ['realm:admin', 'realm:manager'] })
 export class PurchaseOrdersController {
     constructor(
         private readonly poService: PurchaseOrdersService,

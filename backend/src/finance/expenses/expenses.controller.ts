@@ -4,7 +4,7 @@ import { Roles } from 'nest-keycloak-connect';
 import { Expense } from './entities/expense.entity';
 
 @Controller('finance/expenses')
-@Roles({ roles: ['realm:admin'] })
+@Roles({ roles: ['realm:admin', 'realm:manager'] })
 export class ExpensesController {
     constructor(private readonly expensesService: ExpensesService) { }
 

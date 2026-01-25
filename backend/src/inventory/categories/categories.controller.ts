@@ -3,8 +3,8 @@ import { CategoriesService } from './categories.service';
 import { Roles } from 'nest-keycloak-connect';
 import { Category } from './entities/category.entity';
 
-@Controller('categories')
-@Roles({ roles: ['realm:admin'] })
+@Controller('inventory/categories')
+@Roles({ roles: ['realm:admin', 'realm:manager'] })
 export class CategoriesController {
     constructor(private readonly categoriesService: CategoriesService) { }
 

@@ -3,7 +3,7 @@ import { PaymentsService } from './payments.service';
 import { Roles } from 'nest-keycloak-connect';
 
 @Controller('payments')
-@Roles({ roles: ['realm:admin'] })
+@Roles({ roles: ['realm:admin', 'realm:manager'] })
 export class PaymentsController {
     constructor(private readonly paymentsService: PaymentsService) { }
 

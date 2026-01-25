@@ -10,8 +10,9 @@ import {
   TransactionOutlined,
   WalletOutlined,
   SafetyOutlined,
+  LogoutOutlined,
 } from '@ant-design/icons';
-import { Layout, Menu, Button, theme, Spin } from 'antd';
+import { Layout, Menu, Button, theme, Spin, Dropdown, Avatar, Space, Typography } from 'antd';
 import { Routes, Route, Link, useLocation } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
@@ -297,7 +298,40 @@ const App: React.FC = () => {
             />
             <GlobalSearch />
           </div>
-          <Notifications />
+          <Space size="large">
+            <Notifications />
+            <Dropdown
+              menu={{
+                items: [
+                  {
+                    key: 'profile-info',
+                    label: (
+                      <div style={{ padding: '4px 8px' }}>
+                        <Typography.Text strong>{profile?.firstName} {profile?.lastName}</Typography.Text>
+                        <br />
+                        <Typography.Text type="secondary" style={{ fontSize: 12 }}>{userRole.toUpperCase()}</Typography.Text>
+                      </div>
+                    ),
+                    disabled: true,
+                  },
+                  { type: 'divider' },
+                  {
+                    key: 'logout',
+                    icon: <LogoutOutlined />,
+                    label: 'Logout',
+                    onClick: () => keycloak.logout(),
+                    danger: true,
+                  },
+                ],
+              }}
+              placement="bottomRight"
+            >
+              <Space style={{ cursor: 'pointer' }}>
+                <Avatar icon={<UserOutlined />} style={{ backgroundColor: '#1890ff' }} />
+                <Typography.Text strong style={{ marginLeft: 4 }}>{profile?.firstName}</Typography.Text>
+              </Space>
+            </Dropdown>
+          </Space>
         </Header>
         <Content
           style={{

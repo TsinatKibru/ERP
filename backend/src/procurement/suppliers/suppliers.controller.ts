@@ -3,8 +3,8 @@ import { SuppliersService } from './suppliers.service';
 import { Roles } from 'nest-keycloak-connect';
 import { Supplier } from './entities/supplier.entity';
 
-@Controller('suppliers')
-@Roles({ roles: ['realm:admin'] })
+@Controller('procurement/suppliers')
+@Roles({ roles: ['realm:admin', 'realm:manager'] })
 export class SuppliersController {
     constructor(private readonly suppliersService: SuppliersService) { }
 

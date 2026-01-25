@@ -4,7 +4,7 @@ import { Roles } from 'nest-keycloak-connect';
 import { Employee } from '../entities/employee.entity';
 
 @Controller('hr/employees')
-@Roles({ roles: ['realm:admin'] })
+@Roles({ roles: ['realm:admin', 'realm:manager'] })
 export class EmployeesController {
     constructor(private readonly employeesService: EmployeesService) { }
 

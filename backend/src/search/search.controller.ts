@@ -3,7 +3,7 @@ import { SearchService } from './search.service';
 import { Roles } from 'nest-keycloak-connect';
 
 @Controller('search')
-@Roles({ roles: ['realm:admin'] })
+@Roles({ roles: ['realm:admin', 'realm:manager'] })
 export class SearchController {
     constructor(private readonly searchService: SearchService) { }
 

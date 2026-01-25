@@ -3,7 +3,7 @@ import { LedgerService } from './ledger.service';
 import { Roles } from 'nest-keycloak-connect';
 
 @Controller('inventory/ledger')
-@Roles({ roles: ['realm:admin'] })
+@Roles({ roles: ['realm:admin', 'realm:manager'] })
 export class LedgerController {
     constructor(private readonly ledgerService: LedgerService) { }
 

@@ -6,8 +6,8 @@ import { Roles } from 'nest-keycloak-connect';
 import { Customer } from './entities/customer.entity';
 import { Response } from 'express';
 
-@Controller('customers')
-@Roles({ roles: ['realm:admin'] })
+@Controller('sales/customers')
+@Roles({ roles: ['realm:admin', 'realm:manager'] })
 export class CustomersController {
     constructor(
         private readonly customersService: CustomersService,

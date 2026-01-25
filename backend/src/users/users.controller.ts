@@ -14,7 +14,7 @@ export class UsersController {
     }
 
     @Get(':id')
-    @Roles({ roles: ['realm:admin', 'realm:manager', 'realm:employee'] })
+    @Roles({ roles: ['realm:admin'] })
     async findOne(@Param('id') id: string): Promise<User> {
         return this.usersService.findOne(id);
     }
