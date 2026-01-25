@@ -25,7 +25,7 @@ const CustomersPage: React.FC = () => {
     const { data: customers, isLoading } = useQuery<Customer[]>({
         queryKey: ['customers'],
         queryFn: async () => {
-            const { data } = await axios.get('http://localhost:3000/customers', {
+            const { data } = await axios.get('http://localhost:3000/sales/customers', {
                 headers: { Authorization: `Bearer ${keycloak.token}` },
             });
             return data;
@@ -34,7 +34,7 @@ const CustomersPage: React.FC = () => {
 
     const createMutation = useMutation({
         mutationFn: async (values: Partial<Customer>) => {
-            await axios.post('http://localhost:3000/customers', values, {
+            await axios.post('http://localhost:3000/sales/customers', values, {
                 headers: { Authorization: `Bearer ${keycloak.token}` },
             });
         },
@@ -68,7 +68,7 @@ const CustomersPage: React.FC = () => {
                     onClick={async () => {
                         setDownloadingId(record.id);
                         try {
-                            const response = await axios.get(`http://localhost:3000/customers/${record.id}/statement`, {
+                            const response = await axios.get(`http://localhost:3000/sales/customers/${record.id}/statement`, {
                                 headers: { Authorization: `Bearer ${keycloak.token}` },
                                 responseType: 'blob',
                             });

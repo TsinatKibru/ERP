@@ -121,7 +121,7 @@ const ExpensesPage: React.FC = () => {
                             title="Total Expenditure"
                             value={totalSpent}
                             prefix="-$"
-                            valueStyle={{ color: '#cf1322', fontWeight: 'bold' }}
+                            styles={{ content: { color: '#cf1322', fontWeight: 'bold' } }}
                         />
                     </Card>
                     <Button type="primary" size="large" icon={<PlusOutlined />} onClick={() => setIsModalOpen(true)}>

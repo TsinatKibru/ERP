@@ -26,7 +26,7 @@ const InvoicesPage: React.FC = () => {
     const { data: invoices, isLoading } = useQuery<Invoice[]>({
         queryKey: ['invoices'],
         queryFn: async () => {
-            const { data } = await axios.get('http://localhost:3000/invoices', {
+            const { data } = await axios.get('http://localhost:3000/finance/invoices', {
                 headers: { Authorization: `Bearer ${keycloak.token}` },
             });
             return data;
@@ -35,7 +35,7 @@ const InvoicesPage: React.FC = () => {
 
     const recordPaymentMutation = useMutation({
         mutationFn: async (values: any) => {
-            await axios.post(`http://localhost:3000/payments/invoice/${selectedInvoice?.id}`, values, {
+            await axios.post(`http://localhost:3000/finance/payments/invoice/${selectedInvoice?.id}`, values, {
                 headers: { Authorization: `Bearer ${keycloak.token}` },
             });
         },
@@ -84,7 +84,7 @@ const InvoicesPage: React.FC = () => {
                         onClick={async () => {
                             setDownloadingId(record.id);
                             try {
-                                const response = await axios.get(`http://localhost:3000/invoices/${record.id}/pdf`, {
+                                const response = await axios.get(`http://localhost:3000/finance/invoices/${record.id}/pdf`, {
                                     headers: { Authorization: `Bearer ${keycloak.token}` },
                                     responseType: 'blob',
                                 });

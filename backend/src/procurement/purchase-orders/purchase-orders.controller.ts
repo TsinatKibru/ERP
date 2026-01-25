@@ -5,7 +5,7 @@ import { Roles } from 'nest-keycloak-connect';
 import { PurchaseOrder, PurchaseOrderStatus } from './entities/purchase-order.entity';
 import { Response } from 'express';
 
-@Controller('purchase-orders')
+@Controller('procurement/purchase-orders')
 @Roles({ roles: ['realm:admin', 'realm:manager'] })
 export class PurchaseOrdersController {
     constructor(

@@ -21,7 +21,7 @@ const CategoriesPage: React.FC = () => {
     const { data: categories, isLoading } = useQuery<Category[]>({
         queryKey: ['categories'],
         queryFn: async () => {
-            const { data } = await axios.get('http://localhost:3000/categories', {
+            const { data } = await axios.get('http://localhost:3000/inventory/categories', {
                 headers: { Authorization: `Bearer ${keycloak.token}` },
             });
             return data;
@@ -30,7 +30,7 @@ const CategoriesPage: React.FC = () => {
 
     const createMutation = useMutation({
         mutationFn: async (values: Partial<Category>) => {
-            await axios.post('http://localhost:3000/categories', values, {
+            await axios.post('http://localhost:3000/inventory/categories', values, {
                 headers: { Authorization: `Bearer ${keycloak.token}` },
             });
         },
@@ -44,7 +44,7 @@ const CategoriesPage: React.FC = () => {
 
     const deleteMutation = useMutation({
         mutationFn: async (id: string) => {
-            await axios.delete(`http://localhost:3000/categories/${id}`, {
+            await axios.delete(`http://localhost:3000/inventory/categories/${id}`, {
                 headers: { Authorization: `Bearer ${keycloak.token}` },
             });
         },

@@ -3,7 +3,7 @@ import { ProductsService } from './products.service';
 import { Roles } from 'nest-keycloak-connect';
 import { Product } from './entities/product.entity';
 
-@Controller('products')
+@Controller('inventory/products')
 @Roles({ roles: ['realm:admin', 'realm:manager'] })
 export class ProductsController {
     constructor(private readonly productsService: ProductsService) { }

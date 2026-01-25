@@ -23,7 +23,7 @@ const SuppliersPage: React.FC = () => {
     const { data: suppliers, isLoading } = useQuery<Supplier[]>({
         queryKey: ['suppliers'],
         queryFn: async () => {
-            const { data } = await axios.get('http://localhost:3000/suppliers', {
+            const { data } = await axios.get('http://localhost:3000/procurement/suppliers', {
                 headers: { Authorization: `Bearer ${keycloak.token}` },
             });
             return data;
@@ -32,7 +32,7 @@ const SuppliersPage: React.FC = () => {
 
     const createMutation = useMutation({
         mutationFn: async (values: Partial<Supplier>) => {
-            await axios.post('http://localhost:3000/suppliers', values, {
+            await axios.post('http://localhost:3000/procurement/suppliers', values, {
                 headers: { Authorization: `Bearer ${keycloak.token}` },
             });
         },

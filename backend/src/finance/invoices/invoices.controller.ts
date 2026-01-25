@@ -5,7 +5,7 @@ import { Roles } from 'nest-keycloak-connect';
 import { Invoice, InvoiceStatus } from './entities/invoice.entity';
 import { Response } from 'express';
 
-@Controller('invoices')
+@Controller('finance/invoices')
 @Roles({ roles: ['realm:admin', 'realm:manager'] })
 export class InvoicesController {
     constructor(

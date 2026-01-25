@@ -29,7 +29,7 @@ const ProductsPage: React.FC = () => {
     const { data: products, isLoading } = useQuery<Product[]>({
         queryKey: ['products'],
         queryFn: async () => {
-            const { data } = await axios.get('http://localhost:3000/products', {
+            const { data } = await axios.get('http://localhost:3000/inventory/products', {
                 headers: { Authorization: `Bearer ${keycloak.token}` },
             });
             return data;
@@ -39,7 +39,7 @@ const ProductsPage: React.FC = () => {
     const { data: categories } = useQuery<Category[]>({
         queryKey: ['categories'],
         queryFn: async () => {
-            const { data } = await axios.get('http://localhost:3000/categories', {
+            const { data } = await axios.get('http://localhost:3000/inventory/categories', {
                 headers: { Authorization: `Bearer ${keycloak.token}` },
             });
             return data;
@@ -48,7 +48,7 @@ const ProductsPage: React.FC = () => {
 
     const createMutation = useMutation({
         mutationFn: async (values: any) => {
-            await axios.post('http://localhost:3000/products', values, {
+            await axios.post('http://localhost:3000/inventory/products', values, {
                 headers: { Authorization: `Bearer ${keycloak.token}` },
             });
         },
@@ -61,7 +61,7 @@ const ProductsPage: React.FC = () => {
 
     const updateMutation = useMutation({
         mutationFn: async (values: any) => {
-            await axios.patch(`http://localhost:3000/products/${editingProduct?.id}`, values, {
+            await axios.patch(`http://localhost:3000/inventory/products/${editingProduct?.id}`, values, {
                 headers: { Authorization: `Bearer ${keycloak.token}` },
             });
         },
@@ -74,7 +74,7 @@ const ProductsPage: React.FC = () => {
 
     const deleteMutation = useMutation({
         mutationFn: async (id: string) => {
-            await axios.delete(`http://localhost:3000/products/${id}`, {
+            await axios.delete(`http://localhost:3000/inventory/products/${id}`, {
                 headers: { Authorization: `Bearer ${keycloak.token}` },
             });
         },

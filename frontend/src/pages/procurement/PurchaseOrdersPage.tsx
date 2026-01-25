@@ -32,7 +32,7 @@ const PurchaseOrdersPage: React.FC = () => {
     const { data: pos, isLoading } = useQuery<PurchaseOrder[]>({
         queryKey: ['purchase-orders'],
         queryFn: async () => {
-            const { data } = await axios.get('http://localhost:3000/purchase-orders', {
+            const { data } = await axios.get('http://localhost:3000/procurement/purchase-orders', {
                 headers: { Authorization: `Bearer ${keycloak.token}` },
             });
             return data;
@@ -41,7 +41,7 @@ const PurchaseOrdersPage: React.FC = () => {
 
     const updateStatusMutation = useMutation({
         mutationFn: async ({ id, status }: { id: string; status: string }) => {
-            await axios.patch(`http://localhost:3000/purchase-orders/${id}/status`, { status }, {
+            await axios.patch(`http://localhost:3000/procurement/purchase-orders/${id}/status`, { status }, {
                 headers: { Authorization: `Bearer ${keycloak.token}` },
             });
         },
@@ -87,7 +87,7 @@ const PurchaseOrdersPage: React.FC = () => {
                         onClick={async () => {
                             setDownloadingId(record.id);
                             try {
-                                const response = await axios.get(`http://localhost:3000/purchase-orders/${record.id}/pdf`, {
+                                const response = await axios.get(`http://localhost:3000/procurement/purchase-orders/${record.id}/pdf`, {
                                     headers: { Authorization: `Bearer ${keycloak.token}` },
                                     responseType: 'blob',
                                 });

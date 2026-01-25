@@ -27,7 +27,7 @@ const CreatePurchaseOrderPage: React.FC = () => {
     const { data: suppliers } = useQuery<Supplier[]>({
         queryKey: ['suppliers'],
         queryFn: async () => {
-            const { data } = await axios.get('http://localhost:3000/suppliers', {
+            const { data } = await axios.get('http://localhost:3000/procurement/suppliers', {
                 headers: { Authorization: `Bearer ${keycloak.token}` },
             });
             return data;
@@ -37,7 +37,7 @@ const CreatePurchaseOrderPage: React.FC = () => {
     const { data: products } = useQuery<Product[]>({
         queryKey: ['products'],
         queryFn: async () => {
-            const { data } = await axios.get('http://localhost:3000/products', {
+            const { data } = await axios.get('http://localhost:3000/inventory/products', {
                 headers: { Authorization: `Bearer ${keycloak.token}` },
             });
             return data;
@@ -50,7 +50,7 @@ const CreatePurchaseOrderPage: React.FC = () => {
                 supplierId: values.supplierId,
                 items: items.map(i => ({ productId: i.productId, quantity: i.quantity, unitPrice: i.unitPrice }))
             };
-            await axios.post('http://localhost:3000/purchase-orders', payload, {
+            await axios.post('http://localhost:3000/procurement/purchase-orders', payload, {
                 headers: { Authorization: `Bearer ${keycloak.token}` },
             });
         },
