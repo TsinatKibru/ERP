@@ -4,7 +4,7 @@ import { Roles } from 'nest-keycloak-connect';
 import { Setting } from './entities/setting.entity';
 
 @Controller('settings')
-@Roles({ roles: ['realm:admin', 'realm:manager'] })
+@Roles({ roles: ['realm:admin', 'realm:manager', 'realm:employee'] })
 export class SettingsController {
     constructor(private readonly settingsService: SettingsService) { }
 
