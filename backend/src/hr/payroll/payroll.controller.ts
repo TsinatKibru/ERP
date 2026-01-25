@@ -15,7 +15,7 @@ export class PayrollController {
     ) { }
 
     @Get()
-    @Roles({ roles: ['admin', 'manager', 'employee'] })
+    @Roles({ roles: ['realm:admin', 'realm:manager', 'realm:employee'] })
     async findAll(@AuthenticatedUser() userToken: any, @Query('period') period?: string): Promise<Payroll[]> {
         const user = await this.usersService.findOrCreateFromToken(userToken);
         if (user.role === 'admin' || user.role === 'manager') {
@@ -28,7 +28,7 @@ export class PayrollController {
     }
 
     @Get(':id')
-    @Roles({ roles: ['admin', 'manager', 'employee'] })
+    @Roles({ roles: ['realm:admin', 'realm:manager', 'realm:employee'] })
     async findOne(@AuthenticatedUser() userToken: any, @Param('id') id: string): Promise<Payroll> {
         const user = await this.usersService.findOrCreateFromToken(userToken);
         const payroll = await this.payrollService.findOne(id);
@@ -43,7 +43,7 @@ export class PayrollController {
     }
 
     @Get(':id/pdf')
-    @Roles({ roles: ['admin', 'manager', 'employee'] })
+    @Roles({ roles: ['realm:admin', 'realm:manager', 'realm:employee'] })
     async getPdf(@AuthenticatedUser() userToken: any, @Param('id') id: string, @Res() res: Response) {
         const user = await this.usersService.findOrCreateFromToken(userToken);
         const payroll = await this.payrollService.findOne(id);

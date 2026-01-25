@@ -12,7 +12,7 @@ export class AttendanceController {
     ) { }
 
     @Get()
-    @Roles({ roles: ['admin', 'manager', 'employee'] })
+    @Roles({ roles: ['realm:admin', 'realm:manager', 'realm:employee'] })
     async findAll(
         @AuthenticatedUser() userToken: any,
         @Query('startDate') startDate?: string,
@@ -29,7 +29,7 @@ export class AttendanceController {
     }
 
     @Get('employee/:id')
-    @Roles({ roles: ['admin', 'manager'] })
+    @Roles({ roles: ['realm:admin', 'realm:manager'] })
     async findByEmployee(@Param('id') id: string): Promise<Attendance[]> {
         return this.attendanceService.findByEmployee(id);
     }

@@ -14,13 +14,13 @@ export class UsersController {
     }
 
     @Get(':id')
-    @Roles({ roles: ['admin', 'user'] })
+    @Roles({ roles: ['realm:admin', 'realm:manager', 'realm:employee'] })
     async findOne(@Param('id') id: string): Promise<User> {
         return this.usersService.findOne(id);
     }
 
     @Patch(':id')
-    @Roles({ roles: ['admin'] })
+    @Roles({ roles: ['realm:admin'] })
     async update(
         @Param('id') id: string,
         @Body() updateData: Partial<User>,
@@ -29,7 +29,7 @@ export class UsersController {
     }
 
     @Patch(':id/employee')
-    @Roles({ roles: ['admin'] })
+    @Roles({ roles: ['realm:admin'] })
     async linkEmployee(
         @Param('id') id: string,
         @Body('employeeId') employeeId: string | null,
