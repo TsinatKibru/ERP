@@ -20,6 +20,9 @@ const Notifications: React.FC = () => {
     // Let's implement a simple backend-driven notification system in the next step.
     // For this UI demo, let's use some hardcoded ones if stats indicate issues.
 
+    const userRoles = keycloak.tokenParsed?.realm_access?.roles || [];
+    const canViewStats = userRoles.includes('admin') || userRoles.includes('manager');
+
     const { data: stats } = useQuery({
         queryKey: ['dashboard-stats'],
         queryFn: async () => {
@@ -28,6 +31,7 @@ const Notifications: React.FC = () => {
             });
             return data;
         },
+        enabled: canViewStats,
     });
 
     const notifications: Notification[] = [];
