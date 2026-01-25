@@ -33,6 +33,9 @@ export class Payroll {
     @Column({ type: 'decimal', precision: 12, scale: 2, default: 0 })
     attendanceDeduction: number;
 
+    @Column({ default: false })
+    skipAttendanceDeduction: boolean;
+
     @Column({ type: 'decimal', precision: 12, scale: 2 })
     netSalary: number;
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Table, Typography, Card, Button, Form, Select, Tag, message, Modal, InputNumber, Space } from 'antd';
+import { Table, Typography, Card, Button, Form, Select, Tag, message, Modal, InputNumber, Space, Switch } from 'antd';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 import keycloak from '../../auth/keycloak';
@@ -18,6 +18,7 @@ interface PayrollRecord {
     deductions: number;
     netSalary: number;
     status: 'draft' | 'paid' | 'cancelled';
+    skipAttendanceDeduction: boolean;
 }
 
 const generatePeriods = () => {
@@ -154,7 +155,11 @@ const PayrollPage: React.FC = () => {
             render: (_: any, record: PayrollRecord) => (
                 <Space direction="vertical" size={0}>
                     <Text type="secondary" style={{ fontSize: 12 }}>{record.absentDays} days</Text>
-                    <Text type="danger" style={{ fontSize: 11 }}>-${Number(record.attendanceDeduction).toLocaleString()}</Text>
+                    {record.skipAttendanceDeduction ? (
+                        <Tag color="cyan" style={{ fontSize: 10 }}>WAIVED</Tag>
+                    ) : (
+                        <Text type="danger" style={{ fontSize: 11 }}>-${Number(record.attendanceDeduction).toLocaleString()}</Text>
+                    )}
                 </Space>
             )
         },
@@ -311,6 +316,9 @@ const PayrollPage: React.FC = () => {
                             <InputNumber style={{ width: '100%' }} prefix="$" />
                         </Form.Item>
                     </div>
+                    <Form.Item name="skipAttendanceDeduction" label="Waive Attendance Deduction?" valuePropName="checked">
+                        <Switch />
+                    </Form.Item>
                 </Form>
             </Modal>
 

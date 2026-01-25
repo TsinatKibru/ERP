@@ -43,7 +43,7 @@ export class PayrollController {
     }
 
     @Post()
-    async generate(@Body() data: { employeeId: string; period: string; bonuses?: number; deductions?: number }): Promise<Payroll> {
+    async generate(@Body() data: { employeeId: string; period: string; bonuses?: number; deductions?: number; skipAttendanceDeduction?: boolean }): Promise<Payroll> {
         return this.payrollService.generate(data);
     }
 
@@ -53,7 +53,7 @@ export class PayrollController {
     }
 
     @Patch(':id')
-    async update(@Param('id') id: string, @Body() data: { bonuses?: number; deductions?: number; status?: PayrollStatus }): Promise<Payroll> {
+    async update(@Param('id') id: string, @Body() data: { bonuses?: number; deductions?: number; status?: PayrollStatus; skipAttendanceDeduction?: boolean }): Promise<Payroll> {
         return this.payrollService.update(id, data);
     }
 

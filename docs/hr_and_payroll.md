@@ -18,8 +18,9 @@ The payroll system uses "Periods" to manage current and historical salary disbur
 1. **Bulk Generate**: Select a target period to automatically create 'Draft' payroll records for all active employees.
 2. **Attendance Link**: The system automatically counts "Absent" days for the period from the Attendance module and applies a pro-rata deduction based on the base salary.
 3. **Review/Edit**: Adjust specific bonuses or deductions for individuals. Records remain editable even after being marked as paid.
-4. **Bulk Management**: "Mark All as Paid" allows finalizing entire periods with one action.
-5. **PDF Payslips**: Securely generated PDF documents available for individual download.
+4. **Attendance Waiving**: Administrators can manually "Waive Attendance Deduction" per record to bypass automatic penalties. This preference is persisted across bulk refreshes.
+5. **Bulk Management**: "Mark All as Paid" allows finalizing entire periods with one action.
+6. **PDF Payslips**: Securely generated PDF documents available for individual download.
 
 ## Data Model
 - `Employee`: Personal data + relation to `Department`.

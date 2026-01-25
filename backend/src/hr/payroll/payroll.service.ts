@@ -28,7 +28,7 @@ export class PayrollService {
         });
     }
 
-    async generate(data: { employeeId: string; period: string; bonuses?: number; deductions?: number }): Promise<Payroll> {
+    async generate(data: { employeeId: string; period: string; bonuses?: number; deductions?: number; skipAttendanceDeduction?: boolean }): Promise<Payroll> {
         const employee = await this.employeesRepository.findOne({ where: { id: data.employeeId } });
         if (!employee) throw new NotFoundException('Employee not found');
 
@@ -66,20 +66,36 @@ export class PayrollService {
         payroll.bonuses = data.bonuses || 0;
         payroll.deductions = data.deductions || 0;
         payroll.absentDays = absentDays;
-        payroll.attendanceDeduction = attendanceDeduction;
+
+        // Preserve skip flag if it exists (for bulk refresh)
+        payroll.skipAttendanceDeduction = data.skipAttendanceDeduction ?? payroll.skipAttendanceDeduction ?? false;
+
+        payroll.attendanceDeduction = payroll.skipAttendanceDeduction ? 0 : attendanceDeduction;
         payroll.netSalary = payroll.baseSalary + payroll.bonuses - (payroll.deductions + payroll.attendanceDeduction);
         payroll.status = PayrollStatus.DRAFT;
 
         return this.payrollRepository.save(payroll);
     }
 
-    async update(id: string, data: { bonuses?: number; deductions?: number; status?: PayrollStatus }): Promise<Payroll> {
+    async update(id: string, data: { bonuses?: number; deductions?: number; status?: PayrollStatus; skipAttendanceDeduction?: boolean }): Promise<Payroll> {
         const payroll = await this.payrollRepository.findOne({ where: { id }, relations: ['employee'] });
         if (!payroll) throw new NotFoundException('Payroll record not found');
 
         if (data.bonuses !== undefined) payroll.bonuses = data.bonuses;
         if (data.deductions !== undefined) payroll.deductions = data.deductions;
         if (data.status !== undefined) payroll.status = data.status;
+
+        if (data.skipAttendanceDeduction !== undefined) {
+            payroll.skipAttendanceDeduction = data.skipAttendanceDeduction;
+            if (payroll.skipAttendanceDeduction) {
+                payroll.attendanceDeduction = 0;
+            } else {
+                // Recalculate original deduction if unskipped
+                const employee = payroll.employee;
+                const dailyRate = (Number(employee.salary) / 12) / 22;
+                payroll.attendanceDeduction = payroll.absentDays * dailyRate;
+            }
+        }
 
         payroll.netSalary = Number(payroll.baseSalary) + Number(payroll.bonuses) - (Number(payroll.deductions) + Number(payroll.attendanceDeduction));
 
