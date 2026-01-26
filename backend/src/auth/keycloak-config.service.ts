@@ -18,7 +18,8 @@ export class KeycloakConfigService implements KeycloakConnectOptionsFactory {
             clientId: this.configService.get<string>('KEYCLOAK_CLIENT_ID', 'erp-backend'),
             secret: this.configService.get<string>('KEYCLOAK_SECRET', 'your-client-secret'),
             policyEnforcement: PolicyEnforcementMode.PERMISSIVE,
-            tokenValidation: TokenValidation.ONLINE,
+            // Use OFFLINE validation to avoid simple issuer mismatch if public key can be fetched
+            tokenValidation: TokenValidation.OFFLINE,
             tokenExtractor: (request: any) => {
                 const authHeader = request.headers.authorization;
                 if (authHeader) {
