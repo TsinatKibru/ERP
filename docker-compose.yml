@@ -60,7 +60,6 @@ services:
       KEYCLOAK_CLIENT_ID: erp-backend
     extra_hosts:
       - "host.docker.internal:host-gateway"
-    network_mode: bridge
     depends_on:
       - postgres
       - redis
