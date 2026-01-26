@@ -34,33 +34,39 @@ Unlike legacy ERPs, this solution is built on a modern stack (**NestJS + React**
 - [Node.js](https://nodejs.org/) v18+ (for local development)
 
 ### Installation
-1.  **Clone the repository**
-    ```bash
-    git clone https://github.com/TsinatKibru/ERP.git
-    cd ERP
-    ```
 
-2.  **Start Infrastructure**
-    Launch the database, cache, and authentication services:
-    ```bash
-    docker-compose up -d
-    ```
+**Option 1: Docker (Recommended)**
+```bash
+git clone https://github.com/TsinatKibru/ERP.git
+cd ERP
+docker-compose up -d
+```
+That's it! The entire stack (Frontend + Backend + Database + Auth) will be running:
+- **Frontend**: `http://localhost:5173`
+- **Backend API**: `http://localhost:3000`
+- **Keycloak**: `http://localhost:8080`
 
-3.  **Start Backend**
-    ```bash
-    cd backend
-    npm install
-    npm run start:dev
-    ```
-    The API will be available at `http://localhost:3000`.
+**Option 2: Local Development**
+If you prefer running services individually:
 
-4.  **Start Frontend**
-    ```bash
-    cd frontend
-    npm install
-    npm run dev
-    ```
-    Access the application at `http://localhost:5173`.
+1. **Start Infrastructure**
+   ```bash
+   docker-compose up -d postgres redis keycloak
+   ```
+
+2. **Start Backend**
+   ```bash
+   cd backend
+   npm install
+   npm run start:dev
+   ```
+
+3. **Start Frontend**
+   ```bash
+   cd frontend
+   npm install
+   npm run dev
+   ```
 
 ### Standard Credentials
 | Service | URL | Username | Password |

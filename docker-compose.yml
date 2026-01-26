@@ -42,5 +42,36 @@ services:
     depends_on:
       - postgres
 
+  backend:
+    build: ./backend
+    container_name: erp-backend
+    ports:
+      - "3000:3000"
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USERNAME: erp_user
+      DB_PASSWORD: erp_password
+      DB_NAME: erp_db
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      KEYCLOAK_BASE_URL: http://keycloak:8080
+      KEYCLOAK_REALM: erp
+      KEYCLOAK_CLIENT_ID: erp-backend
+    depends_on:
+      - postgres
+      - redis
+      - keycloak
+    restart: unless-stopped
+
+  frontend:
+    build: ./frontend
+    container_name: erp-frontend
+    ports:
+      - "5173:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
+
 volumes:
   postgres_data:
