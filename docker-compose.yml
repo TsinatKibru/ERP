@@ -55,8 +55,8 @@ services:
       DB_NAME: erp_db
       REDIS_HOST: redis
       REDIS_PORT: 6379
-      KEYCLOAK_BASE_URL: http://keycloak:8080
-      KEYCLOAK_REALM: erp
+      KEYCLOAK_AUTH_SERVER_URL: http://localhost:8080
+      KEYCLOAK_REALM: erp-realm
       KEYCLOAK_CLIENT_ID: erp-backend
     depends_on:
       - postgres
